@@ -1,0 +1,22 @@
+{
+  "name": "x-ray",
+  "version": "0.0.1",
+  "description": "structure any website",
+  "keywords": [],
+  "author": "Matthew Mueller <mattmuelle@gmail.cm>",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/MatthewMueller/x-ray.git"
+  },
+  "dependencies": {
+    "cheerio": "^0.17.0",
+    "debug": "^2.0.0",
+    "request": "^2.45.0",
+    "superagent": "^0.20.0"
+  },
+  "devDependencies": {
+    "mocha": "*",
+    "should": "*"
+  },
+  "main": "index"
+}

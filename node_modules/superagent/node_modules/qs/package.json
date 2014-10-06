@@ -1,0 +1,60 @@
+{
+  "name": "qs",
+  "version": "1.2.0",
+  "description": "A querystring parser that supports nesting and arrays, with a depth limit",
+  "homepage": "https://github.com/hapijs/qs",
+  "main": "index.js",
+  "dependencies": {},
+  "devDependencies": {
+    "lab": "3.x.x"
+  },
+  "scripts": {
+    "test": "make test-cov"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/hapijs/qs.git"
+  },
+  "keywords": [
+    "querystring",
+    "qs"
+  ],
+  "author": {
+    "name": "Nathan LaFreniere",
+    "email": "quitlahok@gmail.com"
+  },
+  "licenses": [
+    {
+      "type": "BSD",
+      "url": "http://github.com/hapijs/qs/raw/master/LICENSE"
+    }
+  ],
+  "gitHead": "e1ff638989afe27a2c7f8ec7eecf9bab71a4fbf2",
+  "bugs": {
+    "url": "https://github.com/hapijs/qs/issues"
+  },
+  "_id": "qs@1.2.0",
+  "_shasum": "ed079be28682147e6fd9a34cc2b0c1e0ec6453ee",
+  "_from": "qs@1.2.0",
+  "_npmVersion": "1.4.21",
+  "_npmUser": {
+    "name": "nlf",
+    "email": "quitlahok@gmail.com"
+  },
+  "maintainers": [
+    {
+      "name": "nlf",
+      "email": "quitlahok@gmail.com"
+    },
+    {
+      "name": "hueniverse",
+      "email": "eran@hueniverse.com"
+    }
+  ],
+  "dist": {
+    "shasum": "ed079be28682147e6fd9a34cc2b0c1e0ec6453ee",
+    "tarball": "http://registry.npmjs.org/qs/-/qs-1.2.0.tgz"
+  },
+  "directories": {},
+  "_resolved": "https://registry.npmjs.org/qs/-/qs-1.2.0.tgz"
+}
