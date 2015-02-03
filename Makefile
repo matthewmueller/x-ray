@@ -2,6 +2,7 @@
 test:
 	@./node_modules/.bin/mocha \
 		--require should \
-		--reporter spec
+		--reporter spec \
+		--timeout 20s
 
 .PHONY: test
