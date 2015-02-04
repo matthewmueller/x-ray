@@ -10,15 +10,9 @@
   },
   "dependencies": {
     "cheerio": "^0.17.0",
-    "component-type": "^1.1.0",
     "debug": "^2.0.0",
-    "delegates": "^0.1.0",
-    "extend.js": "0.0.2",
-    "lodash": "^2.4.1",
-    "nightmare": "^1.6.5",
-    "object-assign": "^2.0.0",
-    "traverse": "^0.6.6",
-    "x-ray-select": "^1.0.0"
+    "superagent": "^0.21.0",
+    "x-ray-select": "^1.0.2"
   },
   "devDependencies": {
     "mocha": "*",

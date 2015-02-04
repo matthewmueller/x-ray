@@ -2,9 +2,11 @@
  * Module Dependencies
  */
 
-var phantom = require('../lib/adapters/phantom');
+var rm = require('fs').unlinkSync;
+var join = require('path').join;
 var assert = require('assert');
 var xray = require('..');
+var fs = require('fs');
 
 /**
  * Tests
@@ -12,94 +14,101 @@ var xray = require('..');
 
 describe('x-ray', function() {
 
-  describe('curl', function() {
+  describe('http', function() {
 
     it('should select keys', function(done) {
-
+      var fixture = get('select-keys');
       xray('http://mat.io')
-        .select([{
-          $root: ".item",
-          link: 'a[href]',
-          thumb: 'img[src]',
-          content: {
-            $root: '.item-content',
-            title: 'h2',
-            body: 'section'
-          },
-          tags: ['.item-tags li']
-        }])
+        .select(fixture.input)
         .run(function(err, arr) {
           if (err) return done(err);
-          assert.deepEqual(arr.pop(), {
-            link: 'http://ift.tt/1xIsboY',
-            thumb: 'http://www.google.com/s2/favicons?domain=http://ift.tt/1xIsboY',
-            content:
-             { title: 'The 100 Best Children\'s Books of All Time',
-               body: 'Relive your childhood with TIME\'s list of the best 100 children\'s books of all time http://t.co/NEvBhNM4np http://ift.tt/1sk3xdM\n\n— TIME.com (@TIME) January 11, 2015' },
-            tags: [ 'twitter' ]
-          });
+          assert.deepEqual(arr.pop(), fixture.expected);
           done();
         });
     });
 
+    it('should stream to a file', function(done) {
+      var fixture = get('select-keys');
+      var path = join(__dirname, 'out.json');
+
+      xray('http://mat.io')
+        .select(fixture.input)
+        .write(path)
+        .on('error', done)
+        .on('close', function() {
+          var str = fs.readFileSync(path, 'utf8');
+          var arr = JSON.parse(str);
+          assert.deepEqual(arr.pop(), fixture.expected);
+          rm(path);
+          done();
+        });
+    })
+
     it('should paginate', function(done) {
-      xray('https://github.com/stars/matthewmueller?direction=%s&language=%s&sort=created')
-        .use(phantom())
-        .select([{
-          $root: '.repo-list-item',
-          title: '.repo-list-name',
-          link: '.repo-list-name a[href]',
-          description: 'repo-list-description',
-          meta: {
-            $root: '.repot-list-meta',
-            starredOn: 'time[title]'
-          }
-        }])
+      var fixture = get('paginate');
+      xray('https://github.com/stars/matthewmueller')
+        .select(fixture.input)
         .paginate('.pagination a:last-child[href]')
         .limit(2)
         .run(function(err, arr) {
           if (err) return done(err);
-          console.log(arr);
-        })
-    });
-  });
-
-  describe('phantom', function() {
-    it('should select keys', function(done) {
-      xray('http://mat.io')
-        .use(phantom())
-        .select([{
-          $root: ".item",
-          link: 'a[href]',
-          thumb: 'img[src]',
-          content: {
-            $root: '.item-content',
-            title: 'h2',
-            body: 'section'
-          },
-          tags: ['.item-tags li']
-        }])
-        .run(function(err, arr) {
-          if (err) return done(err);
-          assert.deepEqual(arr.pop(), {
-            link: 'http://ift.tt/1xIsboY',
-            thumb: 'http://www.google.com/s2/favicons?domain=http://ift.tt/1xIsboY',
-            content:
-             { title: 'The 100 Best Children\'s Books of All Time',
-               body: 'Relive your childhood with TIME\'s list of the best 100 children\'s books of all time http://t.co/NEvBhNM4np http://ift.tt/1sk3xdM\n\n— TIME.com (@TIME) January 11, 2015' },
-            tags: [ 'twitter' ]
-          })
+          fixture.expected(arr);
           done();
         });
     });
+
+    it('should add delay to pagination', function(done) {
+      var fixture = get('paginate');
+      xray('https://github.com/stars/matthewmueller')
+        .select(fixture.input)
+        .paginate('.pagination a:last-child[href]')
+        .limit(2)
+        .delay(2000)
+        .run(function(err, arr) {
+          if (err) return done(err);
+          fixture.expected(arr);
+          done();
+        });
+    })
+
+    it('should stream to a file and paginate', function(done) {
+      var fixture = get('paginate');
+      var path = join(__dirname, 'out.json');
+
+      xray('https://github.com/stars/matthewmueller')
+        .select(fixture.input)
+        .paginate('.pagination a:last-child[href]')
+        .limit(2)
+        .write(path)
+        .on('error', done)
+        .on('close', function() {
+          var str = fs.readFileSync(path, 'utf8');
+          var arr = JSON.parse(str);
+          fixture.expected(arr);
+          rm(path);
+          done();
+        });
+    });
+
+    it('should yield an empty array on unmatched collections', function(done) {
+      xray('http://mat.io')
+        .select([{
+          title: '.titlez'
+        }])
+        .run(function(err, arr) {
+          if (err) return done(err);
+          assert.deepEqual([], arr);
+          done();
+        })
+    })
   });
 
-
-  it('should select collections', function() {
-
-  })
-
-  it('should select a collection of keys', function() {
-
-  })
 })
+
+/**
+ * Read
+ */
+
+function get(path) {
+  return require(join(__dirname, 'fixtures', path));
+}
