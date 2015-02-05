@@ -1,6 +1,6 @@
 ![x-ray](https://cldup.com/r-PhcugeZ0.svg)
 
-## Introduction
+## Introduction [![img](https://gittask.com/lapwinglabs/x-ray.svg)](https://gittask.com/lapwinglabs/x-ray)
 
 ```js
 var xray = require('x-ray');
