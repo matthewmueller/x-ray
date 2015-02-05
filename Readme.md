@@ -237,7 +237,7 @@ When paginating, this specifies a limit to the number of pages x-ray should craw
 
 #### Xray#run(<function:optional> fn)
 
-Start the scrapper, calling `fn` when we're done scrapping.
+Start the scraper, calling `fn` when we're done scraping.
 
 ```js
 xray('http://google.com')
@@ -256,7 +256,7 @@ var title = yield xray('http://google.com').select('title').run();
 
 #### Xray#write(<string|WritableStream> filepath) -> WritableStream
 
-Start the scrapper, streaming each page to `filepath`. Returns a [`WritableStream`](http://nodejs.org/docs/latest/api/stream.html#stream_class_stream_writable).
+Start the scraper, streaming each page to `filepath`. Returns a [`WritableStream`](http://nodejs.org/docs/latest/api/stream.html#stream_class_stream_writable).
 
 ##### Streaming to a file
 
