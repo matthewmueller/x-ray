@@ -301,7 +301,7 @@ make test
 ## Credits
 
 - Logo uses a modified version of [XOXO](http://thenounproject.com/xoxo/)'s [Network](http://thenounproject.com/term/network/23949/).
-- Segment's [Nightmare](http://nightmarejs.org) provides the spine for the PhantomJS driver.
+- Segment's [Nightmare](http://nightmarejs.org) provides the spine for the [PhantomJS driver](http://github.com/lapwinglabs/x-ray-phantom).
 
 ## License
 
