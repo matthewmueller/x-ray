@@ -2,9 +2,11 @@
  * Module Dependencies
  */
 
+var stdout = require('catch-stdout');
 var rm = require('fs').unlinkSync;
 var join = require('path').join;
 var assert = require('assert');
+var isArray = Array.isArray;
 var subs = require('subs');
 var xray = require('..');
 var fs = require('fs');
@@ -15,6 +17,46 @@ var fs = require('fs');
 
 describe('x-ray', function() {
 
+  it('should support strings', function(done) {
+    xray('http://mat.io')
+      .select('title')
+      .run(function(err, str) {
+        if (err) return done(err);
+        assert.equal('mat.io', str)
+        done();
+      });
+  })
+
+  it('should support arrays', function(done) {
+    xray('http://mat.io')
+      .select(['.Header-list-item a'])
+      .run(function(err, arr) {
+        if (err) return done(err);
+        assert.deepEqual(arr, [
+          'Github',
+          'Twitter',
+          'Lapwing',
+          'Email'
+        ]);
+        done();
+      });
+  })
+
+  it('should select an object', function(done) {
+    var fixture = get('select-keys');
+    xray('http://mat.io')
+      .select(fixture.input[0])
+      .run(function(err, obj) {
+        if (err) return done(err);
+        assert('http' == obj.link.slice(0, 4));
+        assert('http' == obj.thumb.slice(0, 4));
+        assert(obj.content.title.length);
+        assert(obj.content.body.length);
+        assert(isArray(obj.tags));
+        done();
+      })
+  })
+
   it('should select keys', function(done) {
     var fixture = get('select-keys');
     xray('http://mat.io')
@@ -24,6 +66,12 @@ describe('x-ray', function() {
         assert.deepEqual(arr.pop(), fixture.expected);
         done();
       });
+  });
+
+  it('should be yieldable', function *() {
+    var fixture = get('select-keys');
+    var title = yield xray('http://google.com').select('title').run();
+    assert('Google' == title);
   });
 
   it('should stream to a file', function(done) {
@@ -42,6 +90,52 @@ describe('x-ray', function() {
         done();
       });
   })
+
+  it('should stream strings to stdout', function(done) {
+    var restore = stdout();
+    xray('http://google.com')
+      .select('title')
+      .write(process.stdout)
+      .once('error', done)
+      .once('close', function() {
+        assert('Google' == restore());
+        done();
+      })
+  });
+
+  it('should stream objects to stdout', function(done) {
+    var restore = stdout();
+    xray('http://google.com')
+      .select({
+        title: 'title'
+      })
+      .write(process.stdout)
+      .once('error', done)
+      .once('close', function() {
+        assert.deepEqual({ title: 'Google' }, JSON.parse(restore()));
+        done();
+      })
+  });
+
+  it('should be an array when streaming an object and paginating', function(done) {
+    var restore = stdout();
+    xray('https://github.com/stars/matthewmueller')
+      .select({
+        $root: '.repo-list-item',
+        title: '.repo-list-name'
+      })
+      .paginate('.pagination a:last-child[href]')
+      .limit(2)
+      .write(process.stdout)
+      .once('error', done)
+      .once('close', function() {
+        var arr = JSON.parse(restore());
+        arr.forEach(function(item) {
+          assert(item.title.length);
+        });
+        done();
+      })
+  });
 
   it('should paginate', function(done) {
     var fixture = get('paginate');

@@ -9,14 +9,16 @@
     "url": "git://github.com/MatthewMueller/x-ray.git"
   },
   "dependencies": {
+    "catch-stdout": "0.0.1",
     "cheerio": "^0.17.0",
     "debug": "^2.0.0",
     "superagent": "^0.21.0",
-    "x-ray-select": "^1.0.2"
+    "x-ray-select": "^1.0.3",
+    "yieldly": "0.0.1"
   },
   "devDependencies": {
+    "co-mocha": "^1.1.0",
     "mocha": "*",
-    "should": "*",
     "subs": "0.0.1"
   },
   "main": "index"

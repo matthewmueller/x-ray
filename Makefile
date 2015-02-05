@@ -1,7 +1,8 @@
 
 test:
 	@./node_modules/.bin/mocha \
-		--require should \
+		--harmony-generators \
+		--require co-mocha \
 		--reporter spec \
 		--timeout 20s
 
