@@ -6,7 +6,7 @@
   "author": "Matthew Mueller <mattmuelle@gmail.cm>",
   "repository": {
     "type": "git",
-    "url": "git://github.com/MatthewMueller/x-ray.git"
+    "url": "git://github.com/lapwinglabs/x-ray.git"
   },
   "dependencies": {
     "catch-stdout": "0.0.1",
