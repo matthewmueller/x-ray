@@ -1,4 +1,11 @@
 
+1.0.2 / 2015-02-05
+==================
+
+  * fix url (thanks Jonah)
+  * added: gittask
+  * Update Readme.md
+
 1.0.1 / 2015-02-04
 ==================
 

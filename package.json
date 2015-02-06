@@ -1,8 +1,8 @@
 {
   "name": "x-ray",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "structure any website",
-  "keywords": [],
+  "keywords": ["scraper", "cheerio", "web"],
   "author": "Matthew Mueller <mattmuelle@gmail.cm>",
   "repository": {
     "type": "git",
