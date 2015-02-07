@@ -1,4 +1,10 @@
 
+1.0.3 / 2015-02-07
+==================
+
+  * add xray.prepare(str, fn) for custom 'title | uppercase' filters
+  * better spot for badges
+
 1.0.2 / 2015-02-05
 ==================
 

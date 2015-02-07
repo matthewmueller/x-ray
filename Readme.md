@@ -1,6 +1,6 @@
 ![x-ray](https://cldup.com/r-PhcugeZ0.svg)
 
-## Introduction 
+## Introduction
 
 [![img](https://gittask.com/lapwinglabs/x-ray.svg)](https://gittask.com/lapwinglabs/x-ray)
 
@@ -211,6 +211,41 @@ xray('http://github.com')
   // delays grabbing the next page for 5 seconds
   .delay(5000)
 ```
+
+#### Xray#prepare(<string|object> str, <function> fn)
+
+You can prepare the data that you scrape for output
+
+```js
+function uppercase(str) {
+  return str.toUpperCase();
+}
+
+xray('mat.io')
+  .prepare('uppercase', uppercase)
+  .select('title | uppercase')
+  .run(function(err, title) {
+    // title == MAT.IO
+  });
+```
+
+You can also pass in objects:
+
+```js
+var prepare = {
+  uppercase: function (str) {
+    return str.toUpperCase();
+  }
+}
+
+xray('mat.io')
+  .prepare(prepare)
+  .select('title | uppercase')
+  .run(function(err, title) {
+    // title == MAT.IO
+  });
+```
+
 
 #### Xray#format(<function> fn)
 
