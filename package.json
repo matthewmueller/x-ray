@@ -2,7 +2,11 @@
   "name": "x-ray",
   "version": "1.0.2",
   "description": "structure any website",
-  "keywords": ["scraper", "cheerio", "web"],
+  "keywords": [
+    "scraper",
+    "cheerio",
+    "web"
+  ],
   "author": "Matthew Mueller <mattmuelle@gmail.cm>",
   "repository": {
     "type": "git",
@@ -12,6 +16,7 @@
     "catch-stdout": "0.0.1",
     "cheerio": "^0.17.0",
     "debug": "^2.0.0",
+    "object-assign": "^2.0.0",
     "superagent": "^0.21.0",
     "x-ray-select": "^1.0.3",
     "yieldly": "0.0.1"

@@ -27,6 +27,23 @@ describe('x-ray', function() {
       });
   })
 
+  describe('prepares', function() {
+    it('should support prepares', function(done) {
+      function uppercase(str) {
+        return str.toUpperCase();
+      }
+
+      xray('http://mat.io')
+        .select('title | uppercase')
+        .prepare({ uppercase: uppercase })
+        .run(function(err, str) {
+          if (err) return done(err);
+          assert.equal('MAT.IO', str)
+          done();
+        });
+    })
+  });
+
   it('should support arrays', function(done) {
     xray('http://mat.io')
       .select(['.Header-list-item a'])
