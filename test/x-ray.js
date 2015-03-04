@@ -229,6 +229,16 @@ describe('x-ray', function() {
       return subs('<a href="{link}">{thumb}</a>', obj);
     }
   })
+
+  it('should support url without schemes', function(done) {
+    xray('http://mat.io')
+      .select(['link[href]'])
+      .run(function(err, arr) {
+        if (err) return done(err);
+        assert.equal('http://mat.io/favicon.ico', arr[0])
+        done();
+      })
+  })
 })
 
 /**
