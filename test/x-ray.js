@@ -44,6 +44,19 @@ describe('x-ray', function() {
     })
   });
 
+  describe('#ua(str)', function(){
+    it('should set the user agent', function(done){
+      xray('http://whatsmyuseragent.com/')
+      .ua('foo/bar')
+      .select('h2.info')
+      .run(function(err, ua){
+        if (err) return done(err);
+        assert('foo/bar' == ua);
+        done();
+      })
+    })
+  })
+
   it('should support arrays', function(done) {
     xray('http://mat.io')
       .select(['.Header-list-item a'])
