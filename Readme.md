@@ -45,7 +45,7 @@ npm install x-ray
 
 ## API
 
-#### Xray(url)
+#### `Xray(url)`
 
 Initialize `xray` with a `url`
 
@@ -53,7 +53,7 @@ Initialize `xray` with a `url`
 xray('http://google.com')
 ```
 
-#### Xray#select(<string|object|array> schema)
+#### `Xray#select(<string|object|array> schema)`
 
 The elements you'd like to select. Uses [x-ray-select](https://github.com/lapwinglabs/x-ray-select) for matching the elements on the page.
 
@@ -155,7 +155,7 @@ xray('http://mat.io')
   });
 ```
 
-#### Xray#use(<function> fn)
+#### `Xray#use(<function> fn)`
 
 Add a plugin to augment Xray's current functionality.
 
@@ -168,7 +168,7 @@ xray('http://google.com')
   .use(phantom(options))
 ```
 
-#### Xray#throws(<boolean> throws)
+#### `Xray#throws(<boolean> throws)`
 
 This tells x-ray whether or not to throw if it encounters an error while parsing. Defaults to throwing (`true`).
 
@@ -177,7 +177,7 @@ xray('https://github.com/')
   .throws(false)
 ```
 
-#### Xray#paginate(<string> selector)
+#### `Xray#paginate(<string> selector)`
 
 Crawl the website by passing a selector that contains a URL to the next or previous page:
 
@@ -193,7 +193,7 @@ xray('https://github.com/')
   .paginate('.prev[href]')
 ```
 
-#### Xray#delay(<number> from, <number:optional> to)
+#### `Xray#delay(<number> from, <number:optional> to)`
 
 When paginating, this will delay the next request randomly between `from` and `to` milliseconds.
 
@@ -214,7 +214,7 @@ xray('http://github.com')
   .delay(5000)
 ```
 
-#### Xray#prepare(<string|object> str, <function> fn)
+#### `Xray#prepare(<string|object> str, <function> fn)`
 
 You can prepare the data that you scrape for output
 
@@ -249,7 +249,7 @@ xray('mat.io')
 ```
 
 
-#### Xray#format(<function> fn)
+#### `Xray#format(<function> fn)`
 
 Specify a custom formatting function for each selected element.
 
@@ -270,11 +270,11 @@ xray('https://github.com/stars/matthewmueller')
 
 `TODO`: specify an "end", so you can do `xray.format(html)` and get back html.
 
-#### Xray#limit(<number> limit)
+#### `Xray#limit(<number> limit)`
 
 When paginating, this specifies a limit to the number of pages x-ray should crawl. Defaults to no limit  (`Infinity`).
 
-#### Xray#run(<function:optional> fn)
+#### `Xray#run(<function:optional> fn)`
 
 Start the scraper, calling `fn` when we're done scraping.
 
@@ -293,7 +293,7 @@ var title = yield xray('http://google.com').select('title').run();
 // title is "Google"
 ```
 
-#### Xray#write(<string|WritableStream> filepath) -> WritableStream
+#### `Xray#write(<string|WritableStream> filepath) -> WritableStream`
 
 Start the scraper, streaming each page to `filepath`. Returns a [`WritableStream`](http://nodejs.org/docs/latest/api/stream.html#stream_class_stream_writable).
 
