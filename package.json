@@ -18,7 +18,7 @@
     "debug": "^2.0.0",
     "object-assign": "^2.0.0",
     "superagent": "^0.21.0",
-    "x-ray-select": "^1.0.6",
+    "x-ray-select": "^1.1.0",
     "yieldly": "0.0.1"
   },
   "devDependencies": {
