@@ -9,7 +9,7 @@
 ```js
 var xray = require('x-ray');
 
-xray('github.com/stars/matthewmueller')
+xray('http://github.com/stars/matthewmueller')
   .select([{
     $root: '.repo-list-item',
     title: '.repo-list-name',
