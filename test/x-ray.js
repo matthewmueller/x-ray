@@ -10,6 +10,8 @@ var isArray = Array.isArray;
 var subs = require('subs');
 var xray = require('..');
 var fs = require('fs');
+var cheerio = require('cheerio');
+var absolute = require('../lib/utils/absolute-urls');
 
 /**
  * Tests
@@ -252,6 +254,26 @@ describe('x-ray', function() {
         done();
       })
   })
+
+  describe('absolute URLs', function(){
+    var $el;
+    var path = 'http://example.com/foo.html';
+
+    it('should not convert URL', function(){
+      $el = cheerio.load('<a href="http://example.com/bar.html"></a>');
+      assert.equal('<a href="http://example.com/bar.html"></a>', absolute(path, $el).html());
+    });
+
+    it('should convert absolute URL', function(){
+      $el = cheerio.load('<a href="/bar.html"></a>');
+      assert.equal('<a href="http://example.com/bar.html"></a>', absolute(path, $el).html());
+    });
+
+    it('should convert relative URL', function(){
+      $el = cheerio.load('<a href="bar.html"></a>');
+      assert.equal('<a href="http://example.com/bar.html"></a>', absolute(path, $el).html());
+    });
+  });
 })
 
 /**
