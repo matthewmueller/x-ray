@@ -274,6 +274,29 @@ describe('x-ray', function() {
       assert.equal('<a href="http://example.com/bar.html"></a>', absolute(path, $el).html());
     });
   });
+
+  describe('should be able to overide limit during traverse', function(done) {
+    var count = 0;
+    var expect = 1;
+    var init = 10;
+    var scraper = xray('http://github.com/stars/matthewmueller')
+    .select([ {
+      $root : '.repo-list-item',
+      title : '.repo-list-name',
+      href : '.repo-list-name a[href]'
+    } ])
+    .limit(init)
+    .paginate('.pagination a:last-child[href]');
+    
+    it('should paginate ' + expect + ' time insteaad of ' + init + " times", function() {
+      scraper.traverse( function (json) {
+        if( ++count >= expectPaging ) scraper.limit(0);
+        return json;
+      }, function(done) {
+        assert.equal(expect, count);
+      });
+    })
+  })
 })
 
 /**
