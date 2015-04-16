@@ -293,7 +293,7 @@ describe('x-ray', function() {
         if( ++count >= expectPaging ) scraper.limit(0);
         return json;
       }, function(done) {
-        assert.equal(expect, count);
+        assert.equal(count, expect);
       });
     })
   })
