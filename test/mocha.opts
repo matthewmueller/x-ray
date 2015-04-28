@@ -1,2 +1,0 @@
---timeout 20s
---require co-mocha

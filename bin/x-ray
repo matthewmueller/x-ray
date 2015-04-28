@@ -1,0 +1,150 @@
+#!/usr/bin/env node
+
+var Crawler = require('x-ray-crawler');
+var Context = require('http-context');
+var pj = require('prettyjson');
+var chalk = require('chalk');
+var repl = require('repl');
+var Xray = require('../');
+var slice = [].slice;
+var actions = {};
+
+/**
+ * Default state
+ */
+
+var xray = Xray()
+var request = Crawler();
+var ctx = Context();
+
+/**
+ * Help
+ */
+
+var help = [
+  '',
+  '  usage: ',
+  '',
+  '      load <url>',
+  '      paginate <attr>',
+  '      select ($) <attr>',
+  ''
+].join('\n');
+
+/**
+ * Regexps
+ */
+
+var rcmd = /^(help|load|paginate|select|\$)/i;
+
+/**
+ * Start the repl
+ */
+
+repl.start({
+  prompt: 'xray > ',
+  input: process.stdin,
+  output: process.stdout,
+  ignoreUndefined: true,
+  eval: evaluate
+});
+
+/**
+ * Evaluate the input
+ */
+
+function evaluate(cmd, ctx, filename, fn) {
+  cmd = cmd.replace(/[\(\n\)]/g, '');
+  if (!cmd) return fn(null, undefined);
+  var args = cmd.split(' ');
+  cmd = args.shift().toLowerCase();
+  if ('help' == cmd || !rcmd.test(cmd)) {
+    console.log(help);
+    return fn(null, undefined);
+  }
+
+  actions[cmd].apply(null, args.concat(function(err, val) {
+    if (err) return fn(err);
+    else if (val) console.log(val);
+    fn(null, undefined);
+  }));
+}
+
+/**
+ * Load
+ */
+
+actions.load = function load(url, fn) {
+  if (arguments.length == 1) {
+    fn = url;
+    return fn(null, help);
+  }
+
+  request(url, function(err, res) {
+    if (err) return fn(err);
+    ctx.status = res.status;
+    ctx.body = res.body;
+    success('loaded: %s', res.url);
+    fn(null);
+  })
+}
+
+/**
+ * Select
+ */
+
+actions.select =
+actions.$ = function select(selector, fn) {
+  if (arguments.length == 1) {
+    fn = url;
+    return fn(null, help);
+  } else if (!ctx.body) {
+    error('nothing to select, try load <url> first');
+    return fn(null);
+  } else {
+    xray(ctx.body, selector)(function(err, obj) {
+      if (err) {
+        error(err.toString())
+        return fn(err);
+      }
+
+      console.log(unstring(JSON.stringify(obj, true, 2)));
+      fn(null);
+    });
+  }
+}
+
+/**
+ * string(...)
+ */
+
+function string(str) {
+  str = unstring(str);
+  return '"' + str + '"';
+}
+
+/**
+ * unstring(str)
+ */
+
+function unstring(str) {
+  return str.replace(/^['"]|['"]$/g, '');
+}
+
+/**
+ * Success
+ */
+
+function success(str) {
+  var args = slice.call(arguments).slice(1);
+  console.error.apply(console.error, [chalk.green('  ' + str)].concat(args));
+}
+
+/**
+ * Error
+ */
+
+function error(str) {
+  var args = slice.call(arguments).slice(1);
+  console.error.apply(console.error, [chalk.red('  ' + str)].concat(args));
+}
