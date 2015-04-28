@@ -1,9 +1,10 @@
-
 test:
 	@./node_modules/.bin/mocha \
-		--harmony-generators \
-		--require co-mocha \
 		--reporter spec \
 		--timeout 20s
 
-.PHONY: test
+coverage:
+	@./node_modules/.bin/istanbul cover ./node_modules/.bin/_mocha -- -u exports -R spec
+	@open coverage/lcov-report/index.html
+
+.PHONY: test coverage
