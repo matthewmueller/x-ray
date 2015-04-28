@@ -1,4 +1,4 @@
-![x-ray](https://cldup.com/RBf5VAREk7.png)
+![x-ray](https://cldup.com/fMBbTcVtwB.png)
 
 ## Introduction
 
