@@ -1,11 +1,5 @@
 ![x-ray](https://cldup.com/fMBbTcVtwB.png)
 
-## Introduction
-
-[![Join the chat at https://gitter.im/lapwinglabs/x-ray](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/lapwinglabs/x-ray?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
-
-[![img](https://gittask.com/lapwinglabs/x-ray.svg)](https://gittask.com/lapwinglabs/x-ray)
-
 ```js
 var xray = require('x-ray');
 
