@@ -3,3 +3,4 @@ npm-debug.log
 .DS_Store
 examples/_*
 examples/*.json
+coverage
