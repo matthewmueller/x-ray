@@ -90,6 +90,20 @@ x(html, 'body', 'h2', function(err, header) {
 
 Specify a `driver` to make requests through.
 
+### xray.write([path])
+
+Write the results to a `path`. If no path is provided, a readable stream is returned.
+This makes it easy to build APIs around x-ray. Here's an example with Express:
+
+```js
+var app = require('express')();
+var x = require('x-ray')();
+
+app.get('/', function(req, res) {
+  res.send(x('http://google.com', 'title').write());
+})
+```
+
 ### xray.paginate(selector)
 
 Select a `url` from an `selector` and visit that page.
