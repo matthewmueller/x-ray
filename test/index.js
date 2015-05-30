@@ -247,6 +247,12 @@ describe('Xray()', function() {
 
   });
 
+  describe('.format()', function() {
+    it('should support adding formatters', function() {
+      // TODO
+    })
+  })
+
   describe('.write()', function() {
     it('write should work with streams', function(done) {
       var html = '<ul class="tags"><li>a</li><li>b</li><li>c</li></ul><ul class="tags"><li>d</li><li>e</li></ul>';
