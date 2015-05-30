@@ -1,22 +1,16 @@
 ![x-ray](https://cldup.com/fMBbTcVtwB.png)
 
 ```js
-var xray = require('x-ray');
+var Xray = require('x-ray');
+var x = Xray();
 
-xray('http://github.com/stars/matthewmueller')
-  .select([{
-    $root: '.repo-list-item',
-    title: '.repo-list-name',
-    link: '.repo-list-name a[href]',
-    description: '.repo-list-description',
-    meta: {
-      $root: '.repo-list-meta',
-      starredOn: 'time'
-    }
-  }])
-  .paginate('.pagination a:last-child[href]')
-  .limit(10)
-  .write('out.json');
+x('https://dribbble.com', 'li.group', [{
+  title: '.dribbble-img strong',
+  image: '.dribbble-img [data-src]@data-src',
+}])
+  .paginate('.next_page@href')
+  .limit(3)
+  .write('results.json')
 ```
 
 ## Installation
@@ -31,296 +25,140 @@ npm install x-ray
 
 - **Pagination support:** Paginate through websites, scraping each page. X-ray also supports a request `delay` and a pagination `limit`. Scraped pages can be streamed to a file, so if there's an error on one page, you won't lose what you've already scraped.
 
-- **Complex actions:** With the PhantomJS driver, you can click on buttons, fill out forms, even login or signup before scraping the page. This allows you to scrape pages that require authentication like Facebook or Twitter.
+- **Crawler support:** Start on one page and move to the next easily. The flow is predictable, following
+a breadth-first crawl through each of the pages.
+
+- **Responsible:** X-ray has support for concurrency, throttles, delays, timeouts and limits to help you scrape any page responsibly.
+
+- **Composable:** The API is entirely composable, giving you great flexibility in how you scrape each page.
 
 - **Pluggable drivers:** Swap in different scrapers depending on your needs. Currently supports HTTP and [PhantomJS driver](http://github.com/lapwinglabs/x-ray-phantom) drivers. In the future, I'd like to see a Tor driver for requesting pages through the Tor network.
 
-- **Adaptive output:** Apply custom functions to format your content. This allows you to create RSS feeds or even HTML pages from your output.
+## Selector API
+
+### xray(url, selector)(fn)
+
+Scrape the `url` for the following `selector`, returning an object in the callback `fn`.
+The `selector` takes an enhanced jQuery-like string that is also able to select on attributes. The syntax for selecting on attributes is `selector@attribute`. If you do not supply an attribute, the default is selecting the `innerText`. Here are a few examples:
+
+- Scrape a single tag
+
+```js
+xray('http://google.com', 'title')(function(err, title) {
+  console.log(title) // Google
+})
+```
+
+- Scrape a single class
+
+```js
+xray('http://reddit.com', '.content')(fn)
+```
+
+- Scrape an attribute
+
+```js
+xray('http://techcrunch.com', 'img.logo@src')(fn)
+```
+
+- Scrape `innerHTML`
+
+```js
+xray('http://news.ycombinator.com', 'body@html')(fn)
+```
+
+### xray(url, scope, selector)
+
+You can also supply a `scope` to each `selector`. In jQuery, this would look something like this: `$(scope).find(selector)`.
+
+### xray(html, scope, selector)
+
+Instead of a url, you can also supply raw HTML and all the same semantics apply.
+
+```js
+var html = "<body><h2>Pear</h2></body>";
+x(html, 'body', 'h2', function(err, header) {
+  header // => Pear
+})
+```
 
 ## API
 
-#### `Xray(url)`
+### xray.driver(fn)
 
-Initialize `xray` with a `url`
+
+
+### xray.paginate(selector)
+
+Select a `url` from an `selector` and visit that page.
+
+### xray.limit(n)
+
+Limits the amount of pagination to `n`
+
+### xray.delay(n)
+
+Delay the next crawl to `n` milliseconds
+
+## Collections
+
+X-ray also has support for selecting collections of tags. While `x(ul', 'li')` will only select the first list item in an unordered list, `x(ul, ['li'])` will select all of them.
+
+Additionally, X-ray supports "collections of collections" allowing you to select all list items in all lists with a command like this: `x(['ul'], ['li'])`.
+
+## Composition
+
+X-ray becomes more powerful when you start composing instances together. Here are a few possibilities:
+
+### Paginating to another site
 
 ```js
-xray('http://google.com')
+var Xray = require('x-ray');
+var x = Xray();
+
+x('http://google.com', {
+  main: 'title',
+  image: x('#gbar a@href', 'title'),
+})(function(err, obj) {
+  obj // => { main: 'Google', image: 'Google Images' }
+})
 ```
 
-#### `Xray#select(<string|object|array> schema)`
-
-The elements you'd like to select. Uses [x-ray-select](https://github.com/lapwinglabs/x-ray-select) for matching the elements on the page.
-
-You can specify `[attr]` to select different attributes. Here are some examples:
-
-- `img[src]`
-- `a[href]`
-- `header[class]`
-- `div[data-count]`
-
-And you can use the `$root` attribute to scope the search. Here are some example selections:
-
-##### Selecting one element:
+### Scoping a selection
 
 ```js
-xray('http://google.com')
-  .select('title')
-  .run(function(err, title) {
-    // title is 'Google'
-  });
-```
+var Xray = require('x-ray');
+var x = Xray();
 
-##### Selecting an array of elements:
-
-```js
-xray('http://mat.io')
-  .select(['.Header-list-item a'])
-  .run(function(err, array) {
-    // array is [ 'Github', 'Twitter', 'Lapwing', 'Email' ]
-  });
-```
-
-##### Selecting an object:
-
-The following will select the first item:
-
-```js
-xray('http://mat.io')
-  .select({
-    $root: ".item",
-    link: 'a[href]',
-    thumb: 'img[src]',
-    content: {
-      $root: '.item-content',
-      title: 'h2',
-      body: 'section'
-    },
-    tags: ['.item-tags li']  
-  })
-  .run(function(err, object) {
-    // object is the first "item":
-    //
-    // {
-    //   link: 'http://ift.tt/1xIsboY',
-    //   thumb: 'http://www.google.com/s2/favicons?domain=http://ift.tt/1xIsboY',
-    //   content: {
-    //      title: 'The 100 Best Children\'s Books of All Time',
-    //      body: 'Relive your childhood...'
-    //   },
-    //   tags: [ 'twitter' ]
-    // }
-  });
-```
-
-It's easy to grab all the items by passing an array.
-
-##### Selecting a collection of objects:
-
-```js
-xray('http://mat.io')
-  .select([{
-    $root: ".item",
-    link: 'a[href]',
-    thumb: 'img[src]',
-    content: {
-      $root: '.item-content',
-      title: 'h2',
-      body: 'section'
-    },
-    tags: ['.item-tags li']  
+x('http://mat.io', {
+  title: 'title',
+  items: x('.item', [{
+    title: '.item-content h2',
+    description: '.item-content section'
   }])
-  .run(function(err, array) {
-    // array is all the "items":
-    //
-    // [
-    //   {
-    //     link: 'http://ift.tt/1xIsboY',
-    //     thumb: 'http://www.google.com/s2/favicons?domain=http://ift.tt/1xIsboY',
-    //     content: {
-    //        title: 'The 100 Best Children\'s Books of All Time',
-    //        body: 'Relive your childhood...'
-    //     },
-    //     tags: [ 'twitter' ]
-    //   },
-    //   {
-    //     ...
-    //   }
-    // ]
-  });
+})(function(err, obj) {
+  obj // => { title: 'mat.io',
+      // =>   items: [
+      // =>     {
+      // =>       title: 'The 100 Best Children\'s Books of All Time',
+      // =>       description: 'Relive your childhood with TIME\'s list...'
+      // =>     }
+      // =>   ]
+      // => }
+})
 ```
 
-#### `Xray#use(<function> fn)`
+## Examples
 
-Add a plugin to augment Xray's current functionality.
+- [selector](/examples/selector.js): simple string selector
+- [collections](/examples/collections.js): selects an object
+- [array](/examples/arrays.js): selects an array
+- [collections of collections](/examples/collection-of-collections.js): selects an array of objects
+- [array of arrays](/examples/array-of-arrays.js): selects an array of arrays
 
-Here's how to use the [PhantomJS driver](http://github.com/lapwinglabs/x-ray-phantom):
+## In the Wild
 
-```js
-var phantom = require('x-ray-phantom');
-
-xray('http://google.com')
-  .use(phantom(options))
-```
-
-#### `Xray#throws(<boolean> throws)`
-
-This tells x-ray whether or not to throw if it encounters an error while parsing. Defaults to throwing (`true`).
-
-```js
-xray('https://github.com/')
-  .throws(false)
-```
-
-#### `Xray#paginate(<string> selector)`
-
-Crawl the website by passing a selector that contains a URL to the next or previous page:
-
-```js
-xray('https://github.com/')
-  .paginate('.next[href]')
-```
-
-You can just as easily go backwards:
-
-```js
-xray('https://github.com/')
-  .paginate('.prev[href]')
-```
-
-#### `Xray#delay(<number> from, <number:optional> to)`
-
-When paginating, this will delay the next request randomly between `from` and `to` milliseconds.
-
-
-```js
-xray('http://github.com')
-  .paginate('.next')
-  // delays grabbing the next page for 5 to 10 seconds
-  .delay(5000, 10000)
-```
-
-If you only pass `from`, it will delay exactly `from` milliseconds.
-
-```js
-xray('http://github.com')
-  .paginate('.next')
-  // delays grabbing the next page for 5 seconds
-  .delay(5000)
-```
-
-#### `Xray#prepare(<string|object> str, <function> fn)`
-
-You can prepare the data that you scrape for output
-
-```js
-function uppercase(str) {
-  return str.toUpperCase();
-}
-
-xray('mat.io')
-  .prepare('uppercase', uppercase)
-  .select('title | uppercase')
-  .run(function(err, title) {
-    // title == MAT.IO
-  });
-```
-
-You can also pass in objects:
-
-```js
-var prepare = {
-  uppercase: function (str) {
-    return str.toUpperCase();
-  }
-}
-
-xray('mat.io')
-  .prepare(prepare)
-  .select('title | uppercase')
-  .run(function(err, title) {
-    // title == MAT.IO
-  });
-```
-
-
-#### `Xray#format(<function> fn)`
-
-Specify a custom formatting function for each selected element.
-
-```js
-xray('https://github.com/stars/matthewmueller')
-  .select([{
-    $root: '.repo-list-item',
-    title: '.repo-list-name',
-    link: '.repo-list-name a[href]',
-  }])
-  .format(function(obj) {
-    return mustache('<a href="{{link}}">{{title}}</a>', obj);
-  })
-  .run(function(err, array) {
-    var html = array.join('<br/>');
-  });
-```
-
-`TODO`: specify an "end", so you can do `xray.format(html)` and get back html.
-
-#### `Xray#limit(<number> limit)`
-
-When paginating, this specifies a limit to the number of pages x-ray should crawl. Defaults to no limit  (`Infinity`).
-
-#### `Xray#run(<function:optional> fn)`
-
-Start the scraper, calling `fn` when we're done scraping.
-
-```js
-xray('http://google.com')
-  .select('title')
-  .run(function(err, title) {
-    // title is "Google"
-  });
-```
-
-If no `fn` is present, we can yield on `run`.
-
-```js
-var title = yield xray('http://google.com').select('title').run();
-// title is "Google"
-```
-
-#### `Xray#write(<string|WritableStream> filepath) -> WritableStream`
-
-Start the scraper, streaming each page to `filepath`. Returns a [`WritableStream`](http://nodejs.org/docs/latest/api/stream.html#stream_class_stream_writable).
-
-##### Streaming to a file
-
-```js
-xray('http://google.com')
-  .select('title')
-  .write('out.json')
-  .on('error', error)
-  .on('close', function() {
-    console.log('all done');
-  })
-```
-
-##### Streaming to `stdout`:
-
-```js
-xray('http://google.com')
-  .select('title')
-  .write(process.stdout);
-```
-
-## FAQ
-
-- Scraping is illegal!
-
-Actually it's not. Scraping is not illegal in the same way that BitTorrent the protocol is not illegal.
-It depends on how you use it. In fact, Google is basically one big scraping company. They follow the `robots.txt` to know what they can and cannot scrape. You should make sure that you are permitted to scrape the content before scraping.
-
-- How do you select elements?
-
-I use the wonderful [SelectorGadget](https://chrome.google.com/webstore/detail/selectorgadget/mhjhnkcfbdhnjickkkdbjoemdmbfginb?hl=en) Chrome Extension.
+- [Levered Returns](http://leveredreturns.com): Uses x-ray to pull together financial data from various unstructured sources around the web.
 
 ## Test
 
@@ -331,32 +169,6 @@ npm install
 make test
 ```
 
-## Credits
-
-- Logo uses a modified version of [XOXO](http://thenounproject.com/xoxo/)'s [Network](http://thenounproject.com/term/network/23949/).
-- Segment's [Nightmare](http://nightmarejs.org) provides the spine for the [PhantomJS driver](http://github.com/lapwinglabs/x-ray-phantom).
-
 ## License
 
-(The MIT License)
-
-Copyright (c) 2014 Matthew Mueller &lt;matt@lapwinglabs.com&gt;
-
-Permission is hereby granted, free of charge, to any person obtaining
-a copy of this software and associated documentation files (the
-'Software'), to deal in the Software without restriction, including
-without limitation the rights to use, copy, modify, merge, publish,
-distribute, sublicense, and/or sell copies of the Software, and to
-permit persons to whom the Software is furnished to do so, subject to
-the following conditions:
-
-The above copyright notice and this permission notice shall be
-included in all copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED 'AS IS', WITHOUT WARRANTY OF ANY KIND,
-EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
-MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
-IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
-CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
-TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
-SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+MIT

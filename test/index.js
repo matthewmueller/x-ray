@@ -178,10 +178,10 @@ describe('Xray()', function() {
     var $ = cheerio.load(html);
     var x = Xray();
 
-    x('.item', [{
+    x($, '.item', [{
       title: 'h2',
       tags: x('.tags', ['li'])
-    }])($, function(err, arr) {
+    }])(function(err, arr) {
       if (err) return done(err);
       assert.deepEqual([
         { title: 'first item', tags: [ 'a', 'b', 'c' ] },
