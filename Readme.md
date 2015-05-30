@@ -23,14 +23,14 @@ npm install x-ray
 
 - **Flexible schema:** Supports strings, arrays, arrays of objects, and nested object structures. The schema is not tied to the structure of the page you're scraping, allowing you to pull the data in the structure of your choosing.
 
+- **Composable:** The API is entirely composable, giving you great flexibility in how you scrape each page.
+
 - **Pagination support:** Paginate through websites, scraping each page. X-ray also supports a request `delay` and a pagination `limit`. Scraped pages can be streamed to a file, so if there's an error on one page, you won't lose what you've already scraped.
 
 - **Crawler support:** Start on one page and move to the next easily. The flow is predictable, following
 a breadth-first crawl through each of the pages.
 
 - **Responsible:** X-ray has support for concurrency, throttles, delays, timeouts and limits to help you scrape any page responsibly.
-
-- **Composable:** The API is entirely composable, giving you great flexibility in how you scrape each page.
 
 - **Pluggable drivers:** Swap in different scrapers depending on your needs. Currently supports HTTP and [PhantomJS driver](http://github.com/lapwinglabs/x-ray-phantom) drivers. In the future, I'd like to see a Tor driver for requesting pages through the Tor network.
 
@@ -39,7 +39,9 @@ a breadth-first crawl through each of the pages.
 ### xray(url, selector)(fn)
 
 Scrape the `url` for the following `selector`, returning an object in the callback `fn`.
-The `selector` takes an enhanced jQuery-like string that is also able to select on attributes. The syntax for selecting on attributes is `selector@attribute`. If you do not supply an attribute, the default is selecting the `innerText`. Here are a few examples:
+The `selector` takes an enhanced jQuery-like string that is also able to select on attributes. The syntax for selecting on attributes is `selector@attribute`. If you do not supply an attribute, the default is selecting the `innerText`.
+
+Here are a few examples:
 
 - Scrape a single tag
 
@@ -84,9 +86,9 @@ x(html, 'body', 'h2', function(err, header) {
 
 ## API
 
-### xray.driver(fn)
+### xray.driver(driver)
 
-
+Specify a `driver` to make requests through.
 
 ### xray.paginate(selector)
 
@@ -94,11 +96,23 @@ Select a `url` from an `selector` and visit that page.
 
 ### xray.limit(n)
 
-Limits the amount of pagination to `n`
+Limit the amount of pagination to `n` requests.
 
-### xray.delay(n)
+### xray.delay(ms)
 
-Delay the next crawl to `n` milliseconds
+Delay the next crawl to `ms` milliseconds
+
+### xray.concurrency(n)
+
+Set a concurrency to `n`. Defaults to `Infinity`.
+
+### xray.throttle(n, ms)
+
+Throttle the requests to `n` requests per `ms` milliseconds.
+
+### xray.timeout (ms)
+
+Specify a timeout of `ms` milliseconds for each request.
 
 ## Collections
 
@@ -120,7 +134,12 @@ x('http://google.com', {
   main: 'title',
   image: x('#gbar a@href', 'title'),
 })(function(err, obj) {
-  obj // => { main: 'Google', image: 'Google Images' }
+/*
+  {
+    main: 'Google',
+    image: 'Google Images'
+  }
+*/
 })
 ```
 
@@ -137,14 +156,17 @@ x('http://mat.io', {
     description: '.item-content section'
   }])
 })(function(err, obj) {
-  obj // => { title: 'mat.io',
-      // =>   items: [
-      // =>     {
-      // =>       title: 'The 100 Best Children\'s Books of All Time',
-      // =>       description: 'Relive your childhood with TIME\'s list...'
-      // =>     }
-      // =>   ]
-      // => }
+/*
+  {
+    title: 'mat.io',
+    items: [
+      {
+        title: 'The 100 Best Children\'s Books of All Time',
+        description: 'Relive your childhood with TIME\'s list...'
+      }
+    ]
+  }
+*/
 })
 ```
 
