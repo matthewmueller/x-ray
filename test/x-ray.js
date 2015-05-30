@@ -135,6 +135,23 @@ describe('x-ray', function() {
       })
   });
 
+  it('should stream paginated strings to stdout', function(done) {
+    var fixture = get('paginate-string');
+    var restore = stdout();
+
+    xray('https://github.com/stars/matthewmueller')
+      .select(fixture.input)
+      .paginate('.pagination a:last-child[href]')
+      .limit(2)
+      .write(process.stdout)
+      .once('error', done)
+      .once('close', function() {
+        var arr = JSON.parse(restore());
+        fixture.expected(arr);
+        done();
+      })
+  });
+
   it('should stream objects to stdout', function(done) {
     var restore = stdout();
     xray('http://google.com')
