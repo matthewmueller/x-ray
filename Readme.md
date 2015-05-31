@@ -106,19 +106,22 @@ app.get('/', function(req, res) {
 
 ### xray.paginate(selector)
 
-Select a `url` from an `selector` and visit that page.
+Select a `url` from a `selector` and visit that page. Available drivers include:
+
+- [phantom driver](https://github.com/lapwinglabs/x-ray-phantom)
 
 ### xray.limit(n)
 
 Limit the amount of pagination to `n` requests.
 
-### xray.delay(ms)
+### xray.delay(from, [to])
 
-Delay the next crawl to `ms` milliseconds
+Delay the next request between `from` and `to` milliseconds.
+If only `from` is specified, delay exactly `from` milliseconds.
 
 ### xray.concurrency(n)
 
-Set a concurrency to `n`. Defaults to `Infinity`.
+Set the request concurrency to `n`. Defaults to `Infinity`.
 
 ### xray.throttle(n, ms)
 
@@ -132,7 +135,7 @@ Specify a timeout of `ms` milliseconds for each request.
 
 X-ray also has support for selecting collections of tags. While `x(ul', 'li')` will only select the first list item in an unordered list, `x(ul, ['li'])` will select all of them.
 
-Additionally, X-ray supports "collections of collections" allowing you to select all list items in all lists with a command like this: `x(['ul'], ['li'])`.
+Additionally, X-ray supports "collections of collections" allowing you to smartly select all list items in all lists with a command like this: `x(['ul'], ['li'])`.
 
 ## Composition
 
@@ -146,7 +149,7 @@ var x = Xray();
 
 x('http://google.com', {
   main: 'title',
-  image: x('#gbar a@href', 'title'),
+  image: x('#gbar a@href', 'title'), // follow link to google images
 })(function(err, obj) {
 /*
   {
