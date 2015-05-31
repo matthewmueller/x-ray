@@ -2,12 +2,24 @@
 
 var Crawler = require('x-ray-crawler');
 var Context = require('http-context');
+var cheerio = require('cheerio');
 var pj = require('prettyjson');
+var isUrl = require('is-url');
 var chalk = require('chalk');
 var repl = require('repl');
 var Xray = require('../');
+var fs = require('fs');
 var slice = [].slice;
 var actions = {};
+
+/**
+ * Locals
+ */
+
+var highlight = require('../lib/highlight');
+var isHTML = require('../lib/is-html');
+var pretty = require('../lib/pretty');
+var params = require('../lib/params');
 
 /**
  * Default state
@@ -25,9 +37,10 @@ var help = [
   '',
   '  usage: ',
   '',
-  '      load <url>',
-  '      paginate <attr>',
-  '      select ($) <attr>',
+  '      load <url|selector|html>',
+  '      paginate <attribute>',
+  '      select [scope] <selector>',
+  '      html',
   ''
 ].join('\n');
 
@@ -80,13 +93,34 @@ actions.load = function load(url, fn) {
     return fn(null, help);
   }
 
-  request(url, function(err, res) {
-    if (err) return fn(err);
-    ctx.status = res.status;
-    ctx.body = res.body;
-    success('loaded: %s', res.url);
+  if (isUrl(url)) {
+    success('loading: %s', url);
+    request(url, function(err, res) {
+      if (err) return fn(err);
+      ctx.status = res.status;
+      ctx.body = res.body;
+      success('loaded: %s', res.url);
+      console.log(pretty(res.url));
+      fn(null);
+    })
+  } else if (isHTML(url)) {
+    success('loading: <html string>');
+    ctx.status = 200;
+    ctx.body = url;
+    success('loaded: <html string>');
+    console.log(pretty(url));
     fn(null);
-  })
+  } else {
+    success('loading: %s', url);
+    fs.readFile(url, 'utf8', function(err, str) {
+      if (err) return fn(err);
+      ctx.status = 200;
+      ctx.body = str;
+      success('loaded: %s', url);
+      response(pretty(str));
+      fn(null);
+    })
+  }
 }
 
 /**
@@ -94,24 +128,25 @@ actions.load = function load(url, fn) {
  */
 
 actions.select =
-actions.$ = function select(selector, fn) {
+actions.$ = function select(scope, selector, fn) {
   if (arguments.length == 1) {
-    fn = url;
-    return fn(null, help);
-  } else if (!ctx.body) {
-    error('nothing to select, try load <url> first');
-    return fn(null);
+    response(ctx.body);
+    fn(null);
+    return;
+  } else if (arguments.length == 2) {
+    fn = selector;
+    selector = coerce(scope);
+    scope = null;
   } else {
-    xray(ctx.body, selector)(function(err, obj) {
-      if (err) {
-        error(err.toString())
-        return fn(err);
-      }
-
-      console.log(unstring(JSON.stringify(obj, true, 2)));
-      fn(null);
-    });
+    scope = coerce(scope);
+    selector = coerce(selector);
   }
+
+  var $ = cheerio.load(ctx.body);
+  $ = highlight($, scope, selector);
+  var html = $.html();
+  response(html);
+  fn(null);
 }
 
 /**
@@ -132,12 +167,27 @@ function unstring(str) {
 }
 
 /**
+ * coerce
+ */
+
+function coerce(str) {
+  return '[' == str[0] && ']' == str[str.length - 1]
+    ? [str.slice(1, -1)]
+    : str;
+}
+
+/**
  * Success
  */
 
 function success(str) {
   var args = slice.call(arguments).slice(1);
   console.error.apply(console.error, [chalk.green('  ' + str)].concat(args));
+}
+
+function response(str) {
+  var args = slice.call(arguments).slice(1);
+  console.error.apply(console.error, [chalk.gray('  ' + str)].concat(args));
 }
 
 /**
