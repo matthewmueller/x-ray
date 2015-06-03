@@ -208,6 +208,8 @@ npm install
 make test
 ```
 
+> You'll need to be running node >= 0.11.0 to run the tests, since they rely on generators.
+
 ## License
 
 MIT
