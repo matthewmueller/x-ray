@@ -1,5 +1,6 @@
 test:
 	@./node_modules/.bin/mocha \
+	        --harmony \
 		--reporter spec \
 		--timeout 20s
 
