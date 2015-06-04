@@ -204,6 +204,7 @@ x('http://mat.io', {
 To run the tests, run:
 
 ```
+npm install phantomjs -g
 npm install
 make test
 ```
