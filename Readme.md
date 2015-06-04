@@ -92,7 +92,7 @@ Specify a `driver` to make requests through.
 
 ### xray.write([path])
 
-Write the results to a `path`. If no path is provided, a readable stream is returned.
+Stream the results to a `path`. If no path is provided, a readable stream is returned.
 This makes it easy to build APIs around x-ray. Here's an example with Express:
 
 ```js
