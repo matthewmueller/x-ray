@@ -4,3 +4,4 @@ npm-debug.log
 examples/_*
 examples/*.json
 coverage
+.idea
