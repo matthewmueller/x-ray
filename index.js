@@ -138,7 +138,7 @@ function Xray() {
           if (!isUrl(url)) {
             debug('%j is not a url, finishing up', url);
             stream(obj, true);
-            fn(null, pages);
+            return fn(null, pages);
           }
 
           stream(obj);
