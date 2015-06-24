@@ -247,6 +247,21 @@ describe('Xray()', function() {
 
   });
 
+  it('should not call function twice when reaching the last page', function(done){
+    this.timeout(10000);
+    setTimeout(done, 9000);
+    var timesCalled = 0;
+    var x = Xray();
+
+    x('https://github.com/lapwinglabs/x-ray/watchers', '.follow-list-item', [{
+      fullName: '.vcard-username'
+    }]).paginate('.next_page@href').limit(10)
+    (function(err, arr) {
+      timesCalled++;
+      assert.equal(1, timesCalled, 'callback was called more than once');
+    });
+  });
+
   describe('.format()', function() {
     it('should support adding formatters', function() {
       // TODO
