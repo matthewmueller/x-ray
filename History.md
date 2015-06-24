@@ -1,4 +1,12 @@
 
+2.0.1 / 2015-06-24
+==================
+
+  * fixed the double call of the callback function
+  * phantomjs is required to run the tests
+  * remove old tests
+  * fix `make test`
+
 2.0.0 / 2015-05-30
 ==================
 
