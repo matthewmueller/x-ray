@@ -1,4 +1,10 @@
 
+2.0.2 / 2015-07-04
+==================
+
+  * handle the empty result set case
+  * add test dependency
+
 2.0.1 / 2015-06-24
 ==================
 
