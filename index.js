@@ -186,13 +186,18 @@ function Xray() {
             var pending = $scope.length;
             var out = [];
 
+            // Handle the empty result set (thanks @jenbennings!)
+            if (!pending) return next(null, out);
+
             $scope.each(function(i, el) {
               var $innerscope = $scope.eq(i);
               var node = xray(scope, v[0]);
               node($innerscope, function(err, obj) {
                 if (err) return next(err);
                 out[i] = obj;
-                if (!--pending) return next(null, compact(out));
+                if (!--pending) {
+                  return next(null, compact(out));
+                }
               });
             });
           }
