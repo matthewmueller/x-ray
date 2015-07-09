@@ -141,7 +141,7 @@ Additionally, X-ray supports "collections of collections" allowing you to smartl
 
 X-ray becomes more powerful when you start composing instances together. Here are a few possibilities:
 
-### Paginating to another site
+### Crawling to another site
 
 ```js
 var Xray = require('x-ray');
