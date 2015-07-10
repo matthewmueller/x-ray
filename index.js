@@ -172,15 +172,15 @@ function Xray() {
       walk(selector, function(v, k, next) {
         if ('string' == typeof v) {
           var value = resolve($, root(scope), v);
-          next(null, value);
+          return next(null, value);
         } else if ('function' == typeof v) {
           v($, function(err, obj) {
             if (err) return next(err);
-            next(null, obj);
+            return next(null, obj);
           });
         } else if (isArray(v)) {
           if ('string' == typeof v[0]) {
-            next(null, resolve($, root(scope), v));
+            return next(null, resolve($, root(scope), v));
           } else if ('object' == typeof v[0]) {
             var $scope = $.find ? $.find(scope) : $(scope);
             var pending = $scope.length;
@@ -202,6 +202,7 @@ function Xray() {
             });
           }
         }
+        return next();
       }, function(err, obj) {
         if (err) return fn(err);
         fn(null, obj, $);
