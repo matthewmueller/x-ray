@@ -126,14 +126,25 @@ function Xray() {
             pages.push(obj);
           }
 
+          if (paginate.hasOwnProperty('halt') && paginate.halt(pages)) {
+            debug('pagination halt condition met, ending');
+            stream(obj, true);
+            return fn(null, pages);
+          }
+
           if (limit <= 0) {
             debug('reached limit, ending');
             stream(obj, true);
             return fn(null, pages);
           }
 
-          var url = resolve($, false, paginate);
-          debug('paginate(%j) => %j', paginate, url);
+          var paginationSelector = paginate.hasOwnProperty('selector')
+            ? paginate.selector
+            : paginate;
+
+          var url = resolve($, false, paginationSelector);
+
+          debug('paginate(%j) => %j', paginationSelector, url);
 
           if (!isUrl(url)) {
             debug('%j is not a url, finishing up', url);
