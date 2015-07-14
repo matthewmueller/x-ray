@@ -247,6 +247,49 @@ describe('Xray()', function() {
 
   });
 
+  // TODO: this could also be tested better, need a static site
+  // with pages
+  it('should paginate with paginate.selector property set', function(done) {
+    this.timeout(10000)
+    var x = Xray();
+
+    x('li.group', [{
+      title: '.dribbble-img strong',
+      image: '.dribbble-img [data-src]@data-src',
+    }]).paginate({selector: '.next_page@href'}).limit(3)
+    ('https://dribbble.com', function(err, arr) {
+      if (err) return done(err);
+      assert(arr.length, 'array should have a length');
+      arr.forEach(function(item) {
+        assert(item.title.length);
+        assert.equal(true, isUrl(item.image));
+      })
+      done();
+    });
+
+  });
+
+  // TODO: this could be tested better, need a static site
+  // with pages as this will fail if dribble ever presents more than 12
+  // images per page
+  it('should halt pagination when pagination.halt condition met', function(done){
+    this.timeout(10000)
+    var x = Xray();
+
+    x('li.group', [{
+      title: '.dribbble-img strong',
+      image: '.dribbble-img [data-src]@data-src',
+    }]).paginate({selector: '.next_page@href', halt: function (data){
+      return data.length == 12 ? true : false;
+    }}).limit(3)
+    ('https://dribbble.com', function(err, arr) {
+      if (err) return done(err);
+      assert.equal(arr.length, 12);
+      done();
+    });
+
+  });
+
   it('should not call function twice when reaching the last page', function(done){
     this.timeout(10000);
     setTimeout(done, 9000);
