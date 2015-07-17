@@ -86,7 +86,7 @@ function Xray() {
           node.html($, next);
         });
       } else if (scope && ~scope.indexOf('@')) {
-        debug('resolving to a url: %s', scope)
+        debug('resolving to a url: %s', scope);
         var url = resolve(source, false, scope);
 
         // ensure that a@href is a URL
@@ -131,7 +131,6 @@ function Xray() {
             stream(obj, true);
             return fn(null, pages);
           }
-
           var url = resolve($, false, paginate);
           debug('paginate(%j) => %j', paginate, url);
 
