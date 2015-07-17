@@ -71,6 +71,10 @@ function Xray() {
         fn = parent;
         parent = null;
       }
+      else if (isUrl(parent)) { // this is also a root node
+        source = parent;
+        parent = null;
+      }
 
       debug('params: %j', {
         source: source,
@@ -129,9 +133,6 @@ function Xray() {
         }
       }
       else {
-        // 'source' must be either a scope for the parent
-        // context (if exists), or it's raw html
-        if (parent) scope = source;
         var $ = load(parent || source);
         node.html($, next);
       }
@@ -145,8 +146,8 @@ function Xray() {
         stream = stream
           ? stream
           : paginate
-          ? stream_array(state.stream)
-          : stream_object(state.stream);
+            ? stream_array(state.stream)
+            : stream_object(state.stream);
 
         if (paginate) {
           if (isArray(obj)) {

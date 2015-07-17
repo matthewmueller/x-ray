@@ -189,7 +189,6 @@ describe('Xray()', function() {
       ], arr);
       done();
     })
-
   })
 
   it('should work with complex selections', function(done) {
