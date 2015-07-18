@@ -27,7 +27,7 @@
     "isobject": "^1.0.0",
     "object-assign": "^2.0.0",
     "prettyjson": "^1.1.0",
-    "x-ray-crawler": "^2.0.1",
+    "x-ray-crawler": "^2.0.2",
     "x-ray-parse": "^1.0.1",
     "yargs": "^3.8.0"
   },

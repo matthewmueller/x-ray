@@ -24,7 +24,7 @@ var url = 'http://lapwinglabs.github.io/static/';
  */
 
 describe('Xray()', function() {
-
+  this.timeout(30000)
   it('should work with the kitchen sink', function(done) {
     var x = Xray();
 
@@ -43,7 +43,6 @@ describe('Xray()', function() {
       assert.equal('Google', obj.inner.title);
       done();
     })
-
   })
 
   it('should work with embedded x-ray instances', function(done) {
@@ -62,7 +61,24 @@ describe('Xray()', function() {
       })
       done();
     })
+  })
 
+  it('should work with an attribute-only selector', function(done) {
+    var x = Xray();
+
+    x({
+      list: x('body a', {
+        first: x('@href', 'title')
+      })
+    })(url, function(err, obj) {
+      if (err) return done(err);
+      assert.deepEqual(obj, {
+        list: {
+          first: 'Loripsum.net - The \'lorem ipsum\' generator that doesn\'t suck.'
+        }
+      })
+      done();
+    })
   })
 
   it('should work without passing a URL in the callback', function(done) {
@@ -92,7 +108,7 @@ describe('Xray()', function() {
     })
   })
 
-  it('should work with an array without a url', function(done) {
+  it.only('should work with an array without a url', function(done) {
     var x = Xray();
 
     x(['a@href'])(url, function(err, arr) {
@@ -106,20 +122,167 @@ describe('Xray()', function() {
     })
   })
 
-  it('arrays should work with a simple selector', function(done) {
+  it('scraping arrays should work with a scope and an attribute-only selector', function(done) {
+    var x = Xray();
+    x('a', ['@href'])(url, function(err, arr) {
+      if (err) return done(err);
+      assert.equal(50, arr.length);
+      assert.equal('http://loripsum.net/', arr.pop());
+      assert.equal('http://loripsum.net/', arr.pop());
+      assert.equal('http://loripsum.net/', arr.pop());
+      assert.equal('http://producthunt.com/', arr.pop());
+      done();
+    })
+  })
+
+  it('scraping arrays should work with a scope and an attribute-only selector in an object', function(done) {
     var x = Xray();
 
     x('a', [{ link: '@href' }])(url, function(err, arr) {
       if (err) return done(err);
       assert.equal(50, arr.length);
-      assert.deepEqual({ link: 'http://loripsum.net/'   }, arr.pop());
-      assert.deepEqual({ link: 'http://loripsum.net/'   }, arr.pop());
-      assert.deepEqual({ link: 'http://loripsum.net/'   }, arr.pop());
+      assert.deepEqual({ link: 'http://loripsum.net/'    }, arr.pop());
+      assert.deepEqual({ link: 'http://loripsum.net/'    }, arr.pop());
+      assert.deepEqual({ link: 'http://loripsum.net/'    }, arr.pop());
       assert.deepEqual({ link: 'http://producthunt.com/' }, arr.pop());
       done();
     })
   })
 
+  it('crawling a link with a simple function selector should work', function(done) {
+    var x = Xray();
+    x(x('a[href="https://google.com/"]@href', 'title'))(url, function(err, title) {
+      if (err) return done(err);
+      assert.equal('Google', title);
+      done();
+    })
+  })
+
+  // THIS IS NOT GOING TO WORK UNLESS WE PROVIDE MORE CONTEXT TO THE NESTED INSTANCE!
+  it.skip('crawling link arrays with an array selector can\'t work like this without scope', function(done) {
+    var x = Xray();
+    x([x('a@href', 'title')])(url, function(err, arr) {
+      if (err) return done(err);
+      assert.equal(50, arr.length);
+      assert.equal('Google', arr[13]);
+      done();
+    })
+  })
+
+  // THIS COULD THOUGH
+  it('crawling link arrays with an array selector should work with this syntax', function(done) {
+    var x = Xray();
+    x(x(['a@href'], 'title'))(url, function(err, arr) {
+      if (err) return done(err);
+      assert.equal(50, arr.length);
+      assert.equal('Google', arr[13]);
+      done();
+    })
+  })
+
+  // SAME PROBLEM HERE...
+  it.skip('crawling link arrays with an object selector can\'t work like this without scope', function(done) {
+    var x = Xray();
+    x([{ title: x('a@href', 'title') }])(function(err, arr) {
+      if (err) return done(err);
+      assert.equal(50, arr.length);
+      assert.deepEqual({ title: 'Google'}, arr[13]);
+      done();
+    })
+  })
+
+  // THIS SHOULD WORK THOUGH - [@] SYNTAX
+  it('crawling link arrays with an object selector should work with this syntax', function(done) {
+    var x = Xray();
+    x(x(['a@href'], { title: 'title' }))(url, function(err, arr) {
+      if (err) return done(err);
+      assert.equal(50, arr.length);
+      assert.deepEqual({ title: 'Google'}, arr[13]);
+      done();
+    })
+  })
+
+  it('crawling a link with a scope and a simple function selector should work', function(done) {
+    var x = Xray();
+    x('a[href="https://google.com/"]', x('@href', 'title'))(url, function(err, title) {
+      if (err) return done(err);
+      assert.equal('Google', title);
+      done();
+    })
+  })
+
+  it('crawling link arrays with a scope and an array selector should work', function(done) {
+    var x = Xray();
+    x('a', [x('@href', 'title')])(url, function(err, arr) {
+      if (err) return done(err);
+      assert.equal(50, arr.length);
+      assert.equal('Google', arr[13]);
+      done();
+    })
+  })
+
+  // [@] SYNTAX EQUIVALENT
+  it('crawling link arrays with a scope and an array selector should work with [@] syntax', function(done) {
+    var x = Xray();
+    x('a', x(['@href'], 'title'))(url, function(err, arr) {
+      if (err) return done(err);
+      assert.equal(50, arr.length);
+      assert.equal('Google', arr[13]);
+      done();
+    })
+  })
+
+  it('crawling link arrays with a scope and an array-nested-object selector should work', function(done) {
+    var x = Xray();
+    x('a', [{ title: x('@href', 'title') }])(url, function(err, arr) {
+      if (err) return done(err);
+      assert.equal(50, arr.length);
+      assert.deepEqual({ title: 'Google'}, arr[13]);
+      done();
+    })
+  })
+
+  // THIS IS THE [@] EQUIVALENT FOR SCOPE (WORKS SAME AS ABOVE TEST)
+  it('crawling link arrays with a scope and an array-nested-object selector should work with [scope] syntax', function(done) {
+    var x = Xray();
+    x(['a'], { title: x('@href', 'title') })(url, function(err, arr) {
+      if (err) return done(err);
+      assert.equal(50, arr.length);
+      assert.deepEqual({ title: 'Google'}, arr[13]);
+      done();
+    })
+  })
+
+  it('crawling link arrays should work without a url in the callback', function(done) {
+    var x = Xray();
+    x(url, 'a', [{ title: x('@href', 'title') }])(function(err, arr) {
+      if (err) return done(err);
+      assert.equal(50, arr.length);
+      assert.deepEqual({ title: 'Google'}, arr[13]);
+      done();
+    })
+  })
+
+  // THIS IS THE [@/SCOPE] EQUIVALENT (actually not quite...if there is more than one @href under a, this will only take the first one)
+  it('crawling link arrays should work without a url in the callback with [scope] syntax', function(done) {
+    var x = Xray();
+    x(url, ['a'], { title: x('@href', 'title') })(function(err, arr) {
+      if (err) return done(err);
+      assert.equal(50, arr.length);
+      assert.deepEqual({ title: 'Google'}, arr[13]);
+      done();
+    })
+  })
+
+  it('crawling one link should work with a url in the callback', function(done) {
+    var x = Xray();
+    x('a[href="https://google.com/"]@href', 'title')(url, function(err, title) {
+      assert.equal('Google', title);
+      done();
+    })
+  })
+
+  // I DON'T THINK THERE IS A [SCOPE] EQUIVALENT FOR THIS RESULT
   it('should select items with a scope', function(done) {
     var html = '<ul class="tags"><li>a</li><li>b</li><li>c</li></ul><ul class="tags"><li>d</li><li>e</li></ul>';
     var $ = cheerio.load(html);
@@ -136,12 +299,45 @@ describe('Xray()', function() {
     })
   })
 
+  // [SCOPE] SYNTAX. I THINK IT'S ACTUALLY EQUIVALENT TO x('.tags', 'li')
+  it('should select items with a scope with [SCOPE] syntax', function(done) {
+    var html = '<ul class="tags"><li>a</li><li>b</li><li>c</li></ul><ul class="tags"><li>d</li><li>e</li></ul>';
+    var $ = cheerio.load(html);
+    var x = Xray();
+    x(['.tags'], 'li')($, function(err, arr) {
+      if (err) return done(err);
+      assert(1 == arr[0].length);
+      assert('a' == arr[0][0]);
+      assert(1 == arr[1].length);
+      assert('d' == arr[1][0]);
+      done();
+    })
+  })
+
   it('should select lists separately too', function(done) {
     var html = '<ul class="tags"><li>a</li><li>b</li><li>c</li></ul><ul class="tags"><li>d</li><li>e</li></ul>';
     var $ = cheerio.load(html);
     var x = Xray();
 
     x('.tags', [['li']])($, function(err, arr) {
+      if (err) return done(err);
+      assert(3 == arr[0].length);
+      assert('a' == arr[0][0]);
+      assert('b' == arr[0][1]);
+      assert('c' == arr[0][2]);
+      assert(2 == arr[1].length);
+      assert('d' == arr[1][0]);
+      assert('e' == arr[1][1]);
+      done();
+    })
+  })
+
+  it('should select lists separately too with [scope] syntax', function(done) {
+    var html = '<ul class="tags"><li>a</li><li>b</li><li>c</li></ul><ul class="tags"><li>d</li><li>e</li></ul>';
+    var $ = cheerio.load(html);
+    var x = Xray();
+
+    x(['.tags'], ['li'])($, function(err, arr) {
       if (err) return done(err);
       assert(3 == arr[0].length);
       assert('a' == arr[0][0]);
