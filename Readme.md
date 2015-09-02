@@ -199,6 +199,10 @@ x('http://mat.io', {
 
 - [Levered Returns](http://leveredreturns.com): Uses x-ray to pull together financial data from various unstructured sources around the web.
 
+## Resources
+
+- Video: https://egghead.io/lessons/node-js-intro-to-web-scraping-with-node-and-x-ray
+
 ## Test
 
 To run the tests, run:
