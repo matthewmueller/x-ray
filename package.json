@@ -25,6 +25,7 @@
     "http-context": "^1.1.0",
     "is-url": "^1.2.0",
     "isobject": "^1.0.0",
+    "nightmare": "segmentio/nightmare#v2",
     "object-assign": "^2.0.0",
     "prettyjson": "^1.1.0",
     "x-ray-crawler": "^2.0.1",
