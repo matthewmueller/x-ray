@@ -295,7 +295,7 @@ function Xray() {
       }
 
       node(function(err) {
-        if (err) state.stream.emit('error', err);
+        if (err) ret.emit('error', err);
       })
 
       return ret;
