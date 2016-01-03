@@ -114,10 +114,9 @@ Select a `url` from a `selector` and visit that page. Available drivers include:
 
 Limit the amount of pagination to `n` requests.
 
-### xray.delay(from, [to])
+### xray.delay(ms)
 
-Delay the next request between `from` and `to` milliseconds.
-If only `from` is specified, delay exactly `from` milliseconds.
+Delay the next request for `ms` milliseconds.
 
 ### xray.concurrency(n)
 

@@ -58,6 +58,7 @@ function Xray() {
       stream: false,
       concurrency: Infinity,
       paginate: false,
+      delay: 0,
       limit: Infinity
     }, state || {});
 
@@ -111,6 +112,7 @@ function Xray() {
         if (err) return fn(err);
         var paginate = state.paginate;
         var limit = --state.limit;
+        var delay = state.delay > 0 ? state.delay : 0;
 
         // create the stream
         stream = stream
@@ -147,11 +149,13 @@ function Xray() {
           debug('paginating %j', url);
           isFinite(limit) && debug('%s page(s) left to crawl', limit)
 
-          xray.request(url, function(err, html) {
-            if (err) return next(err);
-            var $ = load(html, url);
-            node.html($, next);
-          });
+          setTimeout(function() {
+	          xray.request(url, function(err, html) {
+		          if (err) return next(err);
+		          var $ = load(html, url);
+		          node.html($, next);
+          	});
+          }, delay);
 
         } else {
           stream(obj, true);
@@ -212,6 +216,12 @@ function Xray() {
     node.paginate = function(paginate) {
       if (!arguments.length) return state.paginate;
       state.paginate = paginate;
+      return node;
+    }
+    
+    node.delay = function(delay) {
+      if (!arguments.length) return state.delay;
+      state.delay = delay;
       return node;
     }
 
