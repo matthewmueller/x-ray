@@ -91,8 +91,8 @@ function Xray() {
 
         // ensure that a@href is a URL
         if (!isUrl(url)) {
-          debug('%s is not a url!', url);
-          return next(new Error(url + ' is not a URL'));
+          debug('%s is not a url. Skipping!', url);
+          return node.html(load(""), next);
         }
 
         debug('resolved "%s" to a %s', scope, url);
