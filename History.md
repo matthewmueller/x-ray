@@ -1,4 +1,19 @@
 
+2.0.3 / 2016-01-06
+==================
+
+  * Merge pull request #112 from gebrits/patch-1
+  * Merge pull request #123 from narmontas/master
+  * Added support for <base> tag when generating absolute URLs.
+  * Do no error on trying to follow a non-url
+  * Merge pull request #99 from KodeAndGame/patch-1
+  * Emit error on correct stream
+  * added video
+  * Merge pull request #71 from dfdeagle47/master
+  * Fix issue when one of the selector is null
+  * Paginating => Crawling
+  * Update index.js
+
 2.0.2 / 2015-07-04
 ==================
 
