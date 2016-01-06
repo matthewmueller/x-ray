@@ -174,7 +174,7 @@ function Xray() {
           var value = resolve($, root(scope), v);
           return next(null, value);
         } else if ('function' == typeof v) {
-          v($, function(err, obj) {
+          return v($, function(err, obj) {
             if (err) return next(err);
             return next(null, obj);
           });
