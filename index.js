@@ -189,7 +189,7 @@ function Xray() {
             // Handle the empty result set (thanks @jenbennings!)
             if (!pending) return next(null, out);
 
-            $scope.each(function(i, el) {
+            return $scope.each(function(i, el) {
               var $innerscope = $scope.eq(i);
               var node = xray(scope, v[0]);
               node($innerscope, function(err, obj) {
