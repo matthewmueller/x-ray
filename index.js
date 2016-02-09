@@ -110,6 +110,7 @@ function Xray() {
       function next(err, obj, $) {
         if (err) return fn(err);
         var paginate = state.paginate;
+        var paging = state.paging;
         var limit = --state.limit;
 
         // create the stream
@@ -120,7 +121,9 @@ function Xray() {
           : stream_object(state.stream);
 
         if (paginate) {
-          if (isArray(obj)) {
+          if (typeof paging === 'function') {
+            paging(obj);
+          } else if (isArray(obj)) {
             pages = pages.concat(obj);
           } else {
             pages.push(obj);
@@ -209,9 +212,10 @@ function Xray() {
       });
     }
 
-    node.paginate = function(paginate) {
+    node.paginate = function(paginate, paging) {
       if (!arguments.length) return state.paginate;
       state.paginate = paginate;
+      state.paging = paging;
       return node;
     }
 
