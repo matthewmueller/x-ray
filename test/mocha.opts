@@ -1,3 +1,4 @@
+--bail
 --harmony
 --reporter spec
 --timeout 20s

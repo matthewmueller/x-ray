@@ -111,11 +111,8 @@ function Xray () {
         var limit = --state.limit
 
         // create the stream
-        stream = stream
-          ? stream
-          : paginate
-            ? stream_array(state.stream)
-            : stream_object(state.stream)
+        stream = stream || paginate
+        stream = stream ? stream_array(state.stream) : stream_object(state.stream)
 
         if (paginate) {
           if (isArray(obj)) {
