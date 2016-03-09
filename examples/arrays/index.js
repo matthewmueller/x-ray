@@ -1,8 +1,7 @@
+var path = require('path')
 var read = require('fs').readFileSync
-var html = read(__dirname + '/index.html')
+var html = read(path.resovlve(__dirname, 'index.html'))
 var Xray = require('..')
 var x = Xray()
 
-x(html, ['a'])(function (err, arr) {
-  console.log(arr)
-})
+x(html, ['a'])(console.log)
