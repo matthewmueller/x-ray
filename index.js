@@ -8,7 +8,6 @@ var assign = require('object-assign')
 var cheerio = require('cheerio')
 var enstore = require('enstore')
 var isUrl = require('is-url')
-var Batch = require('batch')
 var isArray = Array.isArray
 var fs = require('fs')
 
@@ -26,13 +25,12 @@ var walk = require('./lib/walk')
  */
 
 var debug = require('debug')('x-ray')
-var error = require('debug')('x-ray:error')
 
 /**
  * Crawler methods
  */
 
-var methods = [ 'concurrency', 'throttle', 'timeout', 'driver', 'delay', 'limit']
+var methods = ['concurrency', 'throttle', 'timeout', 'driver', 'delay', 'limit']
 
 /**
  * Export
@@ -66,7 +64,7 @@ function Xray () {
     var stream
 
     function node (source2, fn) {
-      if (1 == arguments.length) {
+      if (arguments.length === 1) {
         fn = source2
       } else {
         source = source2
@@ -169,18 +167,18 @@ function Xray () {
 
     node.html = function ($, fn) {
       walk(selector, function (v, k, next) {
-        if ('string' == typeof v) {
+        if (typeof v === 'string') {
           var value = resolve($, root(scope), v)
           return next(null, value)
-        } else if ('function' == typeof v) {
+        } else if (typeof v === 'function') {
           return v($, function (err, obj) {
             if (err) return next(err)
             return next(null, obj)
           })
         } else if (isArray(v)) {
-          if ('string' == typeof v[0]) {
+          if (typeof v[0] === 'string') {
             return next(null, resolve($, root(scope), v))
-          } else if ('object' == typeof v[0]) {
+          } else if (typeof v[0] === 'object') {
             var $scope = $.find ? $.find(scope) : $(scope)
             var pending = $scope.length
             var out = []
@@ -268,10 +266,10 @@ function Xray () {
  */
 
 function root (selector) {
-  return ('string' == typeof selector || isArray(selector))
-  && !~selector.indexOf('@')
-  && !isUrl(selector)
-  && selector
+  return (typeof selector === 'string' || isArray(selector)) &&
+  !~selector.indexOf('@') &&
+  !isUrl(selector) &&
+  selector
 }
 
 /**
@@ -284,8 +282,8 @@ function root (selector) {
 
 function compact (arr) {
   return arr.filter(function (val) {
-    if (null == val) return false
-    if (undefined !== val.length) return 0 !== val.length
+    if (!val) return false
+    if (val.length !== undefined) return val.length !== 0
     for (var key in val) if (has.call(val, key)) return true
     return false
   })
@@ -330,7 +328,6 @@ function stream_array (stream) {
 
 function stream_object (stream) {
   if (!stream) return function () {}
-  var first = true
 
   return function _stream_object (data, end) {
     var json = JSON.stringify(data, true, 2)

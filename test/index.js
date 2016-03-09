@@ -111,9 +111,9 @@ describe('Xray()', function () {
     x('a', [{ link: '@href' }])(url, function (err, arr) {
       if (err) return done(err)
       assert.equal(50, arr.length)
-      assert.deepEqual({ link: 'http://loripsum.net/'   }, arr.pop())
-      assert.deepEqual({ link: 'http://loripsum.net/'   }, arr.pop())
-      assert.deepEqual({ link: 'http://loripsum.net/'   }, arr.pop())
+      assert.deepEqual({ link: 'http://loripsum.net/' }, arr.pop())
+      assert.deepEqual({ link: 'http://loripsum.net/' }, arr.pop())
+      assert.deepEqual({ link: 'http://loripsum.net/' }, arr.pop())
       assert.deepEqual({ link: 'http://producthunt.com/' }, arr.pop())
       done()
     })
@@ -142,13 +142,13 @@ describe('Xray()', function () {
 
     x('.tags', [['li']])($, function (err, arr) {
       if (err) return done(err)
-      assert(3 == arr[0].length)
-      assert('a' == arr[0][0])
-      assert('b' == arr[0][1])
-      assert('c' == arr[0][2])
-      assert(2 == arr[1].length)
-      assert('d' == arr[1][0])
-      assert('e' == arr[1][1])
+      assert(arr[0].length === 3)
+      assert(arr[0][0] === 'a')
+      assert(arr[0][1] === 'b')
+      assert(arr[0][2] === 'c')
+      assert(arr[1].length === 2)
+      assert(arr[1][0] === 'd')
+      assert(arr[1][1] === 'e')
       done()
     })
   })
@@ -172,7 +172,7 @@ describe('Xray()', function () {
           </ul>
         </div>
       </div>
-    */})
+    */}) // eslint-disable-line
 
     var $ = cheerio.load(html)
     var x = Xray()
@@ -202,7 +202,7 @@ describe('Xray()', function () {
       }])
     })(function (err, obj) {
       if (err) return done(err)
-      assert('mat.io' == obj.title)
+      assert(obj.title === 'mat.io')
 
       assert.deepEqual({
         title: "The 100 Best Children's Books of All Time",
@@ -231,7 +231,7 @@ describe('Xray()', function () {
 
     x('li.group', [{
       title: '.dribbble-img strong',
-      image: '.dribbble-img [data-src]@data-src',
+      image: '.dribbble-img [data-src]@data-src'
     }]).paginate('.next_page@href').limit(3)
     ;('https://dribbble.com', function (err, arr) {
       if (err) return done(err)
@@ -255,6 +255,7 @@ describe('Xray()', function () {
     }]).paginate('.next_page@href').limit(10)
     ;(function (err, arr) {
       timesCalled++
+      assert.ifError(err)
       assert.equal(1, timesCalled, 'callback was called more than once')
     })
   })
@@ -272,13 +273,13 @@ describe('Xray()', function () {
       var x = Xray()
       x($, '.tags', [['li']]).write().pipe(concat(function (data) {
         var arr = JSON.parse(data.toString())
-        assert(3 == arr[0].length)
-        assert('a' == arr[0][0])
-        assert('b' == arr[0][1])
-        assert('c' == arr[0][2])
-        assert(2 == arr[1].length)
-        assert('d' == arr[1][0])
-        assert('e' == arr[1][1])
+        assert(arr[0].length === 3)
+        assert(arr[0][0] === 'a')
+        assert(arr[0][1] === 'b')
+        assert(arr[0][2] === 'c')
+        assert(arr[1].length === 2)
+        assert(arr[1][0] === 'd')
+        assert(arr[1][1] === 'e')
         done()
       }))
     })
@@ -289,7 +290,7 @@ describe('Xray()', function () {
 
       x('https://dribbble.com', 'li.group', [{
         title: '.dribbble-img strong',
-        image: '.dribbble-img [data-src]@data-src',
+        image: '.dribbble-img [data-src]@data-src'
       }]).paginate('.next_page@href').limit(3).write().pipe(concat(function (data) {
         var arr = JSON.parse(data.toString())
         assert(arr.length, 'array should have a length')
@@ -311,13 +312,13 @@ describe('Xray()', function () {
 
       x($, '.tags', [['li']]).write(path).on('finish', function () {
         var arr = JSON.parse(read(path, 'utf8'))
-        assert(3 == arr[0].length)
-        assert('a' == arr[0][0])
-        assert('b' == arr[0][1])
-        assert('c' == arr[0][2])
-        assert(2 == arr[1].length)
-        assert('d' == arr[1][0])
-        assert('e' == arr[1][1])
+        assert(arr[0].length === 3)
+        assert(arr[0][0] === 'a')
+        assert(arr[0][1] === 'b')
+        assert(arr[0][2] === 'c')
+        assert(arr[1].length === 2)
+        assert(arr[1][0] === 'd')
+        assert(arr[1][1] === 'e')
         rm(path)
         done()
       })
@@ -329,7 +330,7 @@ describe('Xray()', function () {
 
       x('https://dribbble.com', 'li.group', [{
         title: '.dribbble-img strong',
-        image: '.dribbble-img [data-src]@data-src',
+        image: '.dribbble-img [data-src]@data-src'
       }]).paginate('.next_page@href').limit(3).write(path).on('finish', function () {
         var arr = JSON.parse(read(path, 'utf8'))
         assert(arr.length, 'array should have a length')

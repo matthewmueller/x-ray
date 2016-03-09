@@ -5,7 +5,6 @@
  */
 
 var params = require('../lib/params')
-var cheerio = require('cheerio')
 var assert = require('assert')
 
 /**
