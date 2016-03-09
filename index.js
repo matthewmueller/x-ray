@@ -221,14 +221,18 @@ function Xray() {
       return node;
     }
 
+    node.stream = function () {
+      state.stream = store.createWriteStream();
+      ret = store.createReadStream();
+    }
+
     node.write = function(path) {
       var ret;
 
       if (arguments.length) {
         ret = state.stream = fs.createWriteStream(path);
       } else {
-        state.stream = store.createWriteStream();
-        ret = store.createReadStream();
+        node.stream();
       }
 
       node(function(err) {
