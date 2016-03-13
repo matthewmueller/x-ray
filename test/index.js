@@ -225,7 +225,7 @@ describe('Xray()', function () {
   // TODO: this could be tested better, need a static site
   // with pages
   it('should work with pagination & limits', function (done) {
-    this.timeout(30000)
+    this.timeout(10000)
     var x = Xray()
 
     var xray = x('https://dribbble.com', 'li.group', [{
@@ -274,35 +274,46 @@ describe('Xray()', function () {
       var html = '<ul class="tags"><li>a</li><li>b</li><li>c</li></ul><ul class="tags"><li>d</li><li>e</li></ul>'
       var $ = cheerio.load(html)
       var x = Xray()
-      x($, '.tags', [['li']]).stream().pipe(concat(function (data) {
-        var arr = JSON.parse(data.toString())
-        assert(arr[0].length === 3)
-        assert(arr[0][0] === 'a')
-        assert(arr[0][1] === 'b')
-        assert(arr[0][2] === 'c')
-        assert(arr[1].length === 2)
-        assert(arr[1][0] === 'd')
-        assert(arr[1][1] === 'e')
-        done()
-      }))
+
+      var xray = x($, '.tags', [['li']])
+
+      xray
+        .write()
+        .pipe(concat(function (data) {
+          var arr = JSON.parse(data.toString())
+          assert(arr[0].length === 3)
+          assert(arr[0][0] === 'a')
+          assert(arr[0][1] === 'b')
+          assert(arr[0][2] === 'c')
+          assert(arr[1].length === 2)
+          assert(arr[1][0] === 'd')
+          assert(arr[1][1] === 'e')
+          done()
+        }))
     })
 
-    xit('write should work with pagination', function (done) {
+    it('write should work with pagination', function (done) {
       this.timeout(10000)
       var x = Xray()
 
-      x('https://dribbble.com', 'li.group', [{
+      var xray = x('https://dribbble.com', 'li.group', [{
         title: '.dribbble-img strong',
         image: '.dribbble-img [data-src]@data-src'
-      }]).paginate('.next_page@href').limit(3).stream().pipe(concat(function (data) {
-        var arr = JSON.parse(data.toString())
-        assert(arr.length, 'array should have a length')
-        arr.forEach(function (item) {
-          assert(item.title.length)
-          assert.equal(true, isUrl(item.image))
-        })
-        done()
-      }))
+      }])
+        .paginate('.next_page@href')
+        .limit(3)
+
+      xray
+        .write()
+        .pipe(concat(function (data) {
+          var arr = JSON.parse(data.toString())
+          assert(arr.length, 'array should have a length')
+          arr.forEach(function (item) {
+            assert(item.title.length)
+            assert.equal(true, isUrl(item.image))
+          })
+          done()
+        }))
     })
   })
 

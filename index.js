@@ -231,13 +231,14 @@ function Xray () {
 
       if (arguments.length) {
         ret = state.stream = fs.createWriteStream(path)
-
-        node(function (err) {
-          if (err) ret.emit('error', err)
-        })
       } else {
-        node.stream()
+        state.stream = store.createWriteStream()
+        ret = store.createReadStream()
       }
+
+      node(function (err) {
+        if (err) ret.emit('error', err)
+      })
 
       return ret
     }
