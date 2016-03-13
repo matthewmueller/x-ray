@@ -339,7 +339,7 @@ describe('Xray()', function () {
         done()
       })
     })
-    xit('stream to a file with pagination', function (done) {
+    it('stream to a file with pagination', function (done) {
       var path = join(__dirname, 'pagination.json')
       this.timeout(10000)
       var x = Xray()
@@ -365,7 +365,7 @@ describe('Xray()', function () {
       var x = Xray()
         .driver(phantom())
 
-      x('http://google.com', 'title')(function (err, str) {
+      x('http://www.google.com/ncr', 'title')(function (err, str) {
         if (err) return done(err)
         assert.equal('Google', str)
         done()
