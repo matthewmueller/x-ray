@@ -225,16 +225,16 @@ function Xray () {
 
     node.stream = function () {
       state.stream = store.createWriteStream()
-      var ret = store.createReadStream()
-      handleStreamError(ret, node)
-      return ret
+      var rs = store.createReadStream()
+      handleStreamError(rs, node)
+      return rs
     }
 
     node.write = function (path) {
       if (!arguments.length) return node.stream()
-      var ret = state.stream = fs.createWriteStream(path)
-      handleStreamError(ret, node)
-      return ret
+      state.stream = fs.createWriteStream(path)
+      handleStreamError(state.stream, node)
+      return state.stream
     }
 
     return node
