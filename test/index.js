@@ -278,7 +278,7 @@ describe('Xray()', function () {
       var xray = x($, '.tags', [['li']])
 
       xray
-        .write()
+        .stream()
         .pipe(concat(function (data) {
           var arr = JSON.parse(data.toString())
           assert(arr[0].length === 3)
@@ -304,10 +304,12 @@ describe('Xray()', function () {
         .limit(3)
 
       xray
-        .write()
-        .pipe(concat(function (data) {
-          var arr = JSON.parse(data.toString())
+        .stream()
+        .pipe(concat(function (buff) {
+          var arr = JSON.parse(buff.toString())
+
           assert(arr.length, 'array should have a length')
+
           arr.forEach(function (item) {
             assert(item.title.length)
             assert.equal(true, isUrl(item.image))

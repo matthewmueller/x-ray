@@ -11,6 +11,12 @@ var isUrl = require('is-url')
 var isArray = Array.isArray
 var fs = require('fs')
 
+function handleStreamError (stream, fn) {
+  fn(function (err) {
+    if (err) stream.emit('error', err)
+  })
+}
+
 /**
  * Locals
  */
@@ -111,8 +117,10 @@ function Xray () {
         var limit = --state.limit
 
         // create the stream
-        stream = stream || paginate
-        stream = stream ? stream_array(state.stream) : stream_object(state.stream)
+        if (!stream) {
+          if (paginate) stream = stream_array(state.stream)
+          else stream = stream_object(state.stream)
+        }
 
         if (paginate) {
           if (isArray(obj)) {
@@ -218,28 +226,14 @@ function Xray () {
     node.stream = function () {
       state.stream = store.createWriteStream()
       var ret = store.createReadStream()
-
-      node(function (err) {
-        if (err) ret.emit('error', err)
-      })
-
+      handleStreamError(ret, node)
       return ret
     }
 
     node.write = function (path) {
-      var ret
-
-      if (arguments.length) {
-        ret = state.stream = fs.createWriteStream(path)
-      } else {
-        state.stream = store.createWriteStream()
-        ret = store.createReadStream()
-      }
-
-      node(function (err) {
-        if (err) ret.emit('error', err)
-      })
-
+      if (!arguments.length) return node.stream()
+      var ret = state.stream = fs.createWriteStream(path)
+      handleStreamError(ret, node)
       return ret
     }
 
