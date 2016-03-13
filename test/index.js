@@ -265,12 +265,12 @@ describe('Xray()', function () {
     })
   })
 
-  describe('.write()', function () {
+  describe('.stream() === .write()', function () {
     it('write should work with streams', function (done) {
       var html = '<ul class="tags"><li>a</li><li>b</li><li>c</li></ul><ul class="tags"><li>d</li><li>e</li></ul>'
       var $ = cheerio.load(html)
       var x = Xray()
-      x($, '.tags', [['li']]).write().pipe(concat(function (data) {
+      x($, '.tags', [['li']]).stream().pipe(concat(function (data) {
         var arr = JSON.parse(data.toString())
         assert(arr[0].length === 3)
         assert(arr[0][0] === 'a')
@@ -290,7 +290,7 @@ describe('Xray()', function () {
       x('https://dribbble.com', 'li.group', [{
         title: '.dribbble-img strong',
         image: '.dribbble-img [data-src]@data-src'
-      }]).paginate('.next_page@href').limit(3).write().pipe(concat(function (data) {
+      }]).paginate('.next_page@href').limit(3).stream().pipe(concat(function (data) {
         var arr = JSON.parse(data.toString())
         assert(arr.length, 'array should have a length')
         arr.forEach(function (item) {

@@ -215,19 +215,29 @@ function Xray () {
       return node
     }
 
+    node.stream = function () {
+      state.stream = store.createWriteStream()
+      var ret = store.createReadStream()
+
+      node(function (err) {
+        if (err) ret.emit('error', err)
+      })
+
+      return ret
+    }
+
     node.write = function (path) {
       var ret
 
       if (arguments.length) {
         ret = state.stream = fs.createWriteStream(path)
-      } else {
-        state.stream = store.createWriteStream()
-        ret = store.createReadStream()
-      }
 
-      node(function (err) {
-        if (err) ret.emit('error', err)
-      })
+        node(function (err) {
+          if (err) ret.emit('error', err)
+        })
+      } else {
+        node.stream()
+      }
 
       return ret
     }
