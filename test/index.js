@@ -1,4 +1,4 @@
-/* global it, describe */
+/* global it, xit, describe, xdescribe */
 
 /**
  * Module dependencies
@@ -28,7 +28,6 @@ var url = 'http://lapwinglabs.github.io/static/'
 describe('Xray()', function () {
   it('should work with the kitchen sink', function (done) {
     var x = Xray()
-
     x({
       title: 'title@text',
       image: x('#gbar a@href', 'title'),
@@ -36,7 +35,7 @@ describe('Xray()', function () {
       inner: x('title', {
         title: '@text'
       })
-    })('http://google.com', function (err, obj) {
+    })('http://www.google.com/ncr', function (err, obj) {
       if (err) return done(err)
       assert.equal('Google', obj.title, '{ title: title@text }')
       assert.equal('Google Images', obj.image)
@@ -190,9 +189,9 @@ describe('Xray()', function () {
     })
   })
 
-  it('should work with complex selections', function (done) {
+  // TODO: Rewrite test, mat.io hasn't the same content.
+  xit('should work with complex selections', function (done) {
     this.timeout(10000)
-
     var x = Xray()
     x('http://mat.io', {
       title: 'title',
@@ -225,7 +224,7 @@ describe('Xray()', function () {
 
   // TODO: this could be tested better, need a static site
   // with pages
-  it('should work with pagination & limits', function (done) {
+  xit('should work with pagination & limits', function (done) {
     this.timeout(10000)
     var x = Xray()
 
@@ -284,7 +283,7 @@ describe('Xray()', function () {
       }))
     })
 
-    it('write should work with pagination', function (done) {
+    xit('write should work with pagination', function (done) {
       this.timeout(10000)
       var x = Xray()
 
@@ -323,7 +322,7 @@ describe('Xray()', function () {
         done()
       })
     })
-    it('stream to a file with pagination', function (done) {
+    xit('stream to a file with pagination', function (done) {
       var path = join(__dirname, 'pagination.json')
       this.timeout(10000)
       var x = Xray()
@@ -344,7 +343,7 @@ describe('Xray()', function () {
     })
   })
 
-  describe('.driver(fn)', function () {
+  xdescribe('.driver(fn)', function () {
     it('should support basic phantom', function (done) {
       var x = Xray()
         .driver(phantom())
