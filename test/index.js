@@ -224,17 +224,21 @@ describe('Xray()', function () {
 
   // TODO: this could be tested better, need a static site
   // with pages
-  xit('should work with pagination & limits', function (done) {
-    this.timeout(10000)
+  it('should work with pagination & limits', function (done) {
+    this.timeout(30000)
     var x = Xray()
 
-    x('li.group', [{
+    var xray = x('https://dribbble.com', 'li.group', [{
       title: '.dribbble-img strong',
       image: '.dribbble-img [data-src]@data-src'
-    }]).paginate('.next_page@href').limit(3)
-    ;('https://dribbble.com', function (err, arr) {
+    }])
+      .paginate('.next_page@href')
+      .limit(3)
+
+    xray(function (err, arr) {
       if (err) return done(err)
       assert(arr.length, 'array should have a length')
+
       arr.forEach(function (item) {
         assert(item.title.length)
         assert.equal(true, isUrl(item.image))
