@@ -38,7 +38,7 @@
     "yargs": "^3.8.0"
   },
   "devDependencies": {
-    "concat-stream": "^1.5.0",
+    "concat-stream": "^1.5.1",
     "istanbul": "~0.4.2",
     "mocha": "latest",
     "multiline": "^1.0.2",
