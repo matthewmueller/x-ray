@@ -270,21 +270,24 @@ describe('Xray()', function() {
   })
   
   it('should apply filters', function(done) {
-    var html = '<h3> Tags </h3><ul class="tags"><li> a</li><li> b </li><li>c </li></ul><ul class="tags"><li>\nd</li><li>e</li></ul>';
+    var html = '<h3> All Tags </h3><ul class="tags"><li> a</li><li> b </li><li>c </li></ul><ul class="tags"><li>\nd</li><li>e</li></ul>';
     var $ = cheerio.load(html);
     var x = Xray({
       filters: {
-        trim: function(value, ctx) {
+        trim: function(value) {
           return typeof value === 'string' ? value.trim() : value;
         },
-        reverse: function(value, ctx) {
+        slice: function(value, limit) {
+          return typeof value === 'string' ? value.slice(0, limit) : value;
+        },
+        reverse: function(value) {
           return typeof value === 'string' ? value.split('').reverse().join('') : value;
         }
       }
     });
     
     x($, {
-      title: 'h3 | trim | reverse',
+      title: 'h3 | trim | reverse | slice:4',
       tags: ['.tags > li | trim']
     })(function(err, obj) {
       assert.deepEqual(obj, {
