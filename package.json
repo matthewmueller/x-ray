@@ -40,8 +40,10 @@
   "devDependencies": {
     "cheerio": "~0.20.0",
     "concat-stream": "^1.5.1",
+    "coveralls": "~2.11.8",
     "istanbul": "~0.4.2",
     "mocha": "latest",
+    "mocha-lcov-reporter": "~1.2.0",
     "multiline": "^1.0.2",
     "rimraf": "^2.3.2",
     "standard": "~6.0.8",
@@ -52,7 +54,8 @@
   },
   "scripts": {
     "pretest": "standard",
-    "test": "istanbul cover mocha -- -u exports -R spec"
+    "test": "mocha",
+    "coveralls": "./node_modules/.bin/istanbul cover ./node_modules/.bin/_mocha --report lcovonly"
   },
   "license": "MIT"
 }

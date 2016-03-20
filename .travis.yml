@@ -16,3 +16,5 @@ addons:
     - ubuntu-toolchain-r-test
     packages:
     - g++-4.8
+script: npm run-script coveralls
+after_script: "cat ./coverage/lcov.info | ./node_modules/coveralls/bin/coveralls.js"
