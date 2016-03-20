@@ -47,6 +47,9 @@
     "standard": "~6.0.8",
     "x-ray-phantom": "^1.0.0"
   },
+  "engines": {
+    "node": ">= 0.10"
+  },
   "scripts": {
     "pretest": "standard",
     "test": "istanbul cover mocha -- -u exports -R spec"
