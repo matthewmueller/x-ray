@@ -44,9 +44,11 @@ module.exports = Xray;
  * Initialize X-ray
  */
 
-function Xray() {
+function Xray(options) {
   var crawler = Crawler();
-
+  options = options || {};
+  filters = options.filters || {};
+  
   function xray(source, scope, selector) {
     var args = params(source, scope, selector);
     selector = args.selector;
@@ -87,7 +89,7 @@ function Xray() {
         });
       } else if (scope && ~scope.indexOf('@')) {
         debug('resolving to a url: %s', scope)
-        var url = resolve(source, false, scope);
+        var url = resolve(source, false, scope, filters);
 
         // ensure that a@href is a URL
         if (!isUrl(url)) {
@@ -132,7 +134,7 @@ function Xray() {
             return fn(null, pages);
           }
 
-          var url = resolve($, false, paginate);
+          var url = resolve($, false, paginate, filters);
           debug('paginate(%j) => %j', paginate, url);
 
           if (!isUrl(url)) {
@@ -171,7 +173,7 @@ function Xray() {
     node.html = function($, fn) {
       walk(selector, function(v, k, next) {
         if ('string' == typeof v) {
-          var value = resolve($, root(scope), v);
+          var value = resolve($, root(scope), v, filters);
           return next(null, value);
         } else if ('function' == typeof v) {
           return v($, function(err, obj) {
@@ -180,7 +182,7 @@ function Xray() {
           });
         } else if (isArray(v)) {
           if ('string' == typeof v[0]) {
-            return next(null, resolve($, root(scope), v));
+            return next(null, resolve($, root(scope), v, filters));
           } else if ('object' == typeof v[0]) {
             var $scope = $.find ? $.find(scope) : $(scope);
             var pending = $scope.length;
