@@ -1,5 +1,14 @@
 ![x-ray](https://cldup.com/fMBbTcVtwB.png)
 
+![Last version](https://img.shields.io/github/tag/lapwinglabs/x-ray.svg?style=flat-square)
+[![Build Status](http://img.shields.io/travis/lapwinglabs/x-ray/master.svg?style=flat-square)](https://travis-ci.org/lapwinglabs/x-ray)
+[![Coverage Status](https://coveralls.io/repos/github/lapwinglabs/x-ray/badge.svg?branch=master&style=flat-square)](https://coveralls.io/github/lapwinglabs/x-ray?branch=master)
+[![Dependency status](http://img.shields.io/david/lapwinglabs/x-ray.svg?style=flat-square)](https://david-dm.org/lapwinglabs/x-ray)
+[![Dev Dependencies Status](http://img.shields.io/david/dev/lapwinglabs/x-ray.svg?style=flat-square)](https://david-dm.org/lapwinglabs/x-ray#info=devDependencies)
+[![NPM Status](http://img.shields.io/npm/dm/x-ray.svg?style=flat-square)](https://www.npmjs.org/package/x-ray)
+![Node version](https://img.shields.io/node/v/x-ray.svg?style=flat-square)
+
+
 ```js
 var Xray = require('x-ray');
 var x = Xray();
