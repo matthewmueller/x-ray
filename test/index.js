@@ -191,46 +191,47 @@ describe('Xray()', function() {
     })
 
   })
-
-  it('should work with complex selections', function(done) {
-    this.timeout(10000);
-
-    var x = Xray();
-    x('http://mat.io', {
-      title: 'title',
-      items: x('.item', [{
-        title: '.item-content h2',
-        description: '.item-content section'
-      }])
-    })(function(err, obj) {
-      if (err) return done(err);
-      assert('mat.io' == obj.title);
-
-      assert.deepEqual({
-        title: 'The 100 Best Children\'s Books of All Time',
-        description: 'Relive your childhood with TIME\'s list of the best 100 children\'s books of all time http://t.co/NEvBhNM4np http://ift.tt/1sk3xdM\n\n— TIME.com (@TIME) January 11, 2015'
-      }, obj.items.pop());
-
-      assert.deepEqual({
-        title: 'itteco/iframely · GitHub',
-        description: 'MatthewMueller starred itteco/iframely'
-      }, obj.items.pop());
-
-      assert.deepEqual({
-        title: 'Republicans Expose Obama’s College Plan as Plot to Make People Smarter - The New Yorker',
-        description: 'Republicans Expose Obama’s College Plan as Plot to Make People Smarter http://t.co/OsvoOgn8Tn\n\n— Assaf (@assaf) January 11, 2015'
-      }, obj.items.pop());
-
-      done();
-    });
-  });
+  
+  // TODO: http://mat.io seems to be down
+  // it('should work with complex selections', function(done) {
+  //   this.timeout(10000);
+  // 
+  //   var x = Xray();
+  //   x('http://mat.io', {
+  //     title: 'title',
+  //     items: x('.item', [{
+  //       title: '.item-content h2',
+  //       description: '.item-content section'
+  //     }])
+  //   })(function(err, obj) {
+  //     if (err) return done(err);
+  //     assert('mat.io' == obj.title);
+  // 
+  //     assert.deepEqual({
+  //       title: 'The 100 Best Children\'s Books of All Time',
+  //       description: 'Relive your childhood with TIME\'s list of the best 100 children\'s books of all time http://t.co/NEvBhNM4np http://ift.tt/1sk3xdM\n\n— TIME.com (@TIME) January 11, 2015'
+  //     }, obj.items.pop());
+  // 
+  //     assert.deepEqual({
+  //       title: 'itteco/iframely · GitHub',
+  //       description: 'MatthewMueller starred itteco/iframely'
+  //     }, obj.items.pop());
+  // 
+  //     assert.deepEqual({
+  //       title: 'Republicans Expose Obama’s College Plan as Plot to Make People Smarter - The New Yorker',
+  //       description: 'Republicans Expose Obama’s College Plan as Plot to Make People Smarter http://t.co/OsvoOgn8Tn\n\n— Assaf (@assaf) January 11, 2015'
+  //     }, obj.items.pop());
+  // 
+  //     done();
+  //   });
+  // });
 
   // TODO: this could be tested better, need a static site
   // with pages
   it('should work with pagination & limits', function(done) {
     this.timeout(10000)
     var x = Xray();
-
+  
     x('li.group', [{
       title: '.dribbble-img strong',
       image: '.dribbble-img [data-src]@data-src',
@@ -244,15 +245,15 @@ describe('Xray()', function() {
       })
       done();
     });
-
+  
   });
-
+  
   it('should not call function twice when reaching the last page', function(done){
     this.timeout(10000);
     setTimeout(done, 9000);
     var timesCalled = 0;
     var x = Xray();
-
+  
     x('https://github.com/lapwinglabs/x-ray/watchers', '.follow-list-item', [{
       fullName: '.vcard-username'
     }]).paginate('.next_page@href').limit(10)
@@ -266,6 +267,32 @@ describe('Xray()', function() {
     it('should support adding formatters', function() {
       // TODO
     })
+  })
+  
+  it('should apply filters', function(done) {
+    var html = '<h3> Tags </h3><ul class="tags"><li> a</li><li> b </li><li>c </li></ul><ul class="tags"><li>\nd</li><li>e</li></ul>';
+    var $ = cheerio.load(html);
+    var x = Xray({
+      filters: {
+        trim: function(value, ctx) {
+          return typeof value === 'string' ? value.trim() : value;
+        },
+        reverse: function(value, ctx) {
+          return typeof value === 'string' ? value.split('').reverse().join('') : value;
+        }
+      }
+    });
+    
+    x($, {
+      title: 'h3 | trim | reverse',
+      tags: ['.tags > li | trim']
+    })(function(err, obj) {
+      assert.deepEqual(obj, {
+        title: 'sgaT',
+        tags: ['a', 'b', 'c', 'd', 'e']
+      });
+      done();
+    });
   })
 
   describe('.write()', function() {
@@ -351,7 +378,7 @@ describe('Xray()', function() {
     it('should support basic phantom', function(done) {
 
       var x = Xray()
-        .driver(phantom());
+        .driver(phantom({ webSecurity: false }));
 
       x('http://google.com', 'title')(function(err, str) {
         if (err) return done(err);
