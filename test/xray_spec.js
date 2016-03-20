@@ -1,11 +1,10 @@
-/* global it, xit, describe, xdescribe */
+/* global it, xit, describe */
 
 /**
  * Module dependencies
  */
 
 var m = require('multiline').stripIndent
-var phantom = require('x-ray-phantom')
 var concat = require('concat-stream')
 var read = require('fs').readFileSync
 var cheerio = require('cheerio')
@@ -25,7 +24,7 @@ var url = 'http://lapwinglabs.github.io/static/'
  * Tests
  */
 
-describe('Xray()', function () {
+describe('Xray basics', function () {
   it('should work with the kitchen sink', function (done) {
     var x = Xray()
     x({
@@ -264,7 +263,7 @@ describe('Xray()', function () {
   })
 
   describe('.format()', function () {
-    it('should support adding formatters', function () {
+    xit('should support adding formatters', function () {
       // TODO
     })
   })
@@ -355,19 +354,6 @@ describe('Xray()', function () {
           assert.equal(true, isUrl(item.image))
         })
         rm(path)
-        done()
-      })
-    })
-  })
-
-  xdescribe('.driver(fn)', function () {
-    it('should support basic phantom', function (done) {
-      var x = Xray()
-        .driver(phantom())
-
-      x('http://www.google.com/ncr', 'title')(function (err, str) {
-        if (err) return done(err)
-        assert.equal('Google', str)
         done()
       })
     })
