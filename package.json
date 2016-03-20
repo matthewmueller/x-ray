@@ -38,6 +38,7 @@
     "yargs": "^3.8.0"
   },
   "devDependencies": {
+    "cheerio": "~0.20.0",
     "concat-stream": "^1.5.1",
     "istanbul": "~0.4.2",
     "mocha": "latest",
