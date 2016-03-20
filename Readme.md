@@ -212,18 +212,6 @@ x('http://mat.io', {
 
 - Video: https://egghead.io/lessons/node-js-intro-to-web-scraping-with-node-and-x-ray
 
-## Test
-
-To run the tests, run:
-
-```
-npm install phantomjs -g
-npm install
-make test
-```
-
-> You'll need to be running node >= 0.11.0 to run the tests, since they rely on generators.
-
 ## License
 
 MIT
