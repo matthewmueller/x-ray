@@ -1,0 +1,3 @@
+--bail
+--reporter spec
+--timeout 20s

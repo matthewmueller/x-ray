@@ -5,3 +5,4 @@ examples/_*
 examples/*.json
 coverage
 .idea
+travis-phantomjs

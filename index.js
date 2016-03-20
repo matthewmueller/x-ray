@@ -2,56 +2,60 @@
  * Module Dependencies
  */
 
-var has = Object.prototype.hasOwnProperty;
-var Crawler = require('x-ray-crawler');
-var assign = require('object-assign');
-var cheerio = require('cheerio');
-var enstore = require('enstore');
-var isUrl = require('is-url');
-var Batch = require('batch');
-var isArray = Array.isArray;
-var fs = require('fs');
+var has = Object.prototype.hasOwnProperty
+var Crawler = require('x-ray-crawler')
+var assign = require('object-assign')
+var cheerio = require('cheerio')
+var enstore = require('enstore')
+var isUrl = require('is-url')
+var isArray = Array.isArray
+var fs = require('fs')
+
+function handleStreamError (stream, fn) {
+  fn(function (err) {
+    if (err) stream.emit('error', err)
+  })
+}
 
 /**
  * Locals
  */
 
-var absolutes = require('./lib/absolutes');
-var resolve = require('./lib/resolve');
-var params = require('./lib/params');
-var walk = require('./lib/walk');
+var absolutes = require('./lib/absolutes')
+var resolve = require('./lib/resolve')
+var params = require('./lib/params')
+var walk = require('./lib/walk')
 
 /**
  * Debugs
  */
 
-var debug = require('debug')('x-ray');
-var error = require('debug')('x-ray:error');
+var debug = require('debug')('x-ray')
 
 /**
  * Crawler methods
  */
 
-var methods = [ 'concurrency', 'throttle', 'timeout', 'driver', 'delay', 'limit'];
+var methods = ['concurrency', 'throttle', 'timeout', 'driver', 'delay', 'limit']
 
 /**
  * Export
  */
 
-module.exports = Xray;
+module.exports = Xray
 
 /**
  * Initialize X-ray
  */
 
-function Xray() {
-  var crawler = Crawler();
+function Xray () {
+  var crawler = Crawler()
 
-  function xray(source, scope, selector) {
-    var args = params(source, scope, selector);
-    selector = args.selector;
-    source = args.source;
-    scope = args.context;
+  function xray (source, scope, selector) {
+    var args = params(source, scope, selector)
+    selector = args.selector
+    source = args.source
+    scope = args.context
 
     // state
     var state = assign({
@@ -59,207 +63,201 @@ function Xray() {
       concurrency: Infinity,
       paginate: false,
       limit: Infinity
-    }, state || {});
+    }, state || {})
 
-    var store = enstore();
-    var pages = [];
-    var stream;
+    var store = enstore()
+    var pages = []
+    var stream
 
-    function node(source2, fn) {
-      if (1 == arguments.length) {
-        fn = source2;
+    function node (source2, fn) {
+      if (arguments.length === 1) {
+        fn = source2
       } else {
-        source = source2;
+        source = source2
       }
 
       debug('params: %j', {
         source: source,
         scope: scope,
         selector: selector
-      });
+      })
 
       if (isUrl(source)) {
-        debug('starting at: %s', source);
-        xray.request(source, function(err, html) {
-          if (err) return next(err);
-          var $ = load(html, source);
-          node.html($, next);
-        });
+        debug('starting at: %s', source)
+        xray.request(source, function (err, html) {
+          if (err) return next(err)
+          var $ = load(html, source)
+          node.html($, next)
+        })
       } else if (scope && ~scope.indexOf('@')) {
         debug('resolving to a url: %s', scope)
-        var url = resolve(source, false, scope);
+        var url = resolve(source, false, scope)
 
         // ensure that a@href is a URL
         if (!isUrl(url)) {
-          debug('%s is not a url. Skipping!', url);
-          return node.html(load(""), next);
+          debug('%s is not a url. Skipping!', url)
+          return node.html(load(''), next)
         }
 
-        debug('resolved "%s" to a %s', scope, url);
-        xray.request(url, function(err, html) {
-          if (err) return next(err);
-          var $ = load(html, url);
-          node.html($, next);
-        });
+        debug('resolved "%s" to a %s', scope, url)
+        xray.request(url, function (err, html) {
+          if (err) return next(err)
+          var $ = load(html, url)
+          node.html($, next)
+        })
       } else {
         // `url` is probably HTML
-        var $ = load(source);
-        node.html($, next);
+        var $ = load(source)
+        node.html($, next)
       }
 
-      function next(err, obj, $) {
-        if (err) return fn(err);
-        var paginate = state.paginate;
-        var limit = --state.limit;
+      function next (err, obj, $) {
+        if (err) return fn(err)
+        var paginate = state.paginate
+        var limit = --state.limit
 
         // create the stream
-        stream = stream
-          ? stream
-          : paginate
-          ? stream_array(state.stream)
-          : stream_object(state.stream);
+        if (!stream) {
+          if (paginate) stream = stream_array(state.stream)
+          else stream = stream_object(state.stream)
+        }
 
         if (paginate) {
           if (isArray(obj)) {
-            pages = pages.concat(obj);
+            pages = pages.concat(obj)
           } else {
-            pages.push(obj);
+            pages.push(obj)
           }
 
           if (limit <= 0) {
-            debug('reached limit, ending');
-            stream(obj, true);
-            return fn(null, pages);
+            debug('reached limit, ending')
+            stream(obj, true)
+            return fn(null, pages)
           }
 
-          var url = resolve($, false, paginate);
-          debug('paginate(%j) => %j', paginate, url);
+          var url = resolve($, false, paginate)
+          debug('paginate(%j) => %j', paginate, url)
 
           if (!isUrl(url)) {
-            debug('%j is not a url, finishing up', url);
-            stream(obj, true);
-            return fn(null, pages);
+            debug('%j is not a url, finishing up', url)
+            stream(obj, true)
+            return fn(null, pages)
           }
 
-          stream(obj);
+          stream(obj)
 
           // debug
-          debug('paginating %j', url);
+          debug('paginating %j', url)
           isFinite(limit) && debug('%s page(s) left to crawl', limit)
 
-          xray.request(url, function(err, html) {
-            if (err) return next(err);
-            var $ = load(html, url);
-            node.html($, next);
-          });
-
+          xray.request(url, function (err, html) {
+            if (err) return next(err)
+            var $ = load(html, url)
+            node.html($, next)
+          })
         } else {
-          stream(obj, true);
-          fn(null, obj);
+          stream(obj, true)
+          fn(null, obj)
         }
       }
 
-      return node;
+      return node
     }
 
-    function load(html, url) {
-      var $ = html.html ? html : cheerio.load(html);
-      if (url) $ = absolutes(url, $);
-      return $;
+    function load (html, url) {
+      var $ = html.html ? html : cheerio.load(html)
+      if (url) $ = absolutes(url, $)
+      return $
     }
 
-    node.html = function($, fn) {
-      walk(selector, function(v, k, next) {
-        if ('string' == typeof v) {
-          var value = resolve($, root(scope), v);
-          return next(null, value);
-        } else if ('function' == typeof v) {
-          return v($, function(err, obj) {
-            if (err) return next(err);
-            return next(null, obj);
-          });
+    node.html = function ($, fn) {
+      walk(selector, function (v, k, next) {
+        if (typeof v === 'string') {
+          var value = resolve($, root(scope), v)
+          return next(null, value)
+        } else if (typeof v === 'function') {
+          return v($, function (err, obj) {
+            if (err) return next(err)
+            return next(null, obj)
+          })
         } else if (isArray(v)) {
-          if ('string' == typeof v[0]) {
-            return next(null, resolve($, root(scope), v));
-          } else if ('object' == typeof v[0]) {
-            var $scope = $.find ? $.find(scope) : $(scope);
-            var pending = $scope.length;
-            var out = [];
+          if (typeof v[0] === 'string') {
+            return next(null, resolve($, root(scope), v))
+          } else if (typeof v[0] === 'object') {
+            var $scope = $.find ? $.find(scope) : $(scope)
+            var pending = $scope.length
+            var out = []
 
             // Handle the empty result set (thanks @jenbennings!)
-            if (!pending) return next(null, out);
+            if (!pending) return next(null, out)
 
-            $scope.each(function(i, el) {
-              var $innerscope = $scope.eq(i);
-              var node = xray(scope, v[0]);
-              node($innerscope, function(err, obj) {
-                if (err) return next(err);
-                out[i] = obj;
+            $scope.each(function (i, el) {
+              var $innerscope = $scope.eq(i)
+              var node = xray(scope, v[0])
+              node($innerscope, function (err, obj) {
+                if (err) return next(err)
+                out[i] = obj
                 if (!--pending) {
-                  return next(null, compact(out));
+                  return next(null, compact(out))
                 }
-              });
-            });
+              })
+            })
           }
         }
-        return next();
-      }, function(err, obj) {
-        if (err) return fn(err);
-        fn(null, obj, $);
-      });
-    }
-
-    node.paginate = function(paginate) {
-      if (!arguments.length) return state.paginate;
-      state.paginate = paginate;
-      return node;
-    }
-
-    node.limit = function(limit) {
-      if (!arguments.length) return state.limit;
-      state.limit = limit;
-      return node;
-    }
-
-    node.write = function(path) {
-      var ret;
-
-      if (arguments.length) {
-        ret = state.stream = fs.createWriteStream(path);
-      } else {
-        state.stream = store.createWriteStream();
-        ret = store.createReadStream();
-      }
-
-      node(function(err) {
-        if (err) ret.emit('error', err);
+        return next()
+      }, function (err, obj) {
+        if (err) return fn(err)
+        fn(null, obj, $)
       })
-
-      return ret;
     }
 
-    return node;
+    node.paginate = function (paginate) {
+      if (!arguments.length) return state.paginate
+      state.paginate = paginate
+      return node
+    }
+
+    node.limit = function (limit) {
+      if (!arguments.length) return state.limit
+      state.limit = limit
+      return node
+    }
+
+    node.stream = function () {
+      state.stream = store.createWriteStream()
+      var rs = store.createReadStream()
+      handleStreamError(rs, node)
+      return rs
+    }
+
+    node.write = function (path) {
+      if (!arguments.length) return node.stream()
+      state.stream = fs.createWriteStream(path)
+      handleStreamError(state.stream, node)
+      return state.stream
+    }
+
+    return node
   }
 
-  xray.request = function(url, fn) {
-    debug('fetching %s', url);
-    crawler(url, function(err, ctx) {
-      if (err) return fn(err);
-      debug('got response for %s with status code: %s', url, ctx.status);
-      return fn(null, ctx.body);
+  xray.request = function (url, fn) {
+    debug('fetching %s', url)
+    crawler(url, function (err, ctx) {
+      if (err) return fn(err)
+      debug('got response for %s with status code: %s', url, ctx.status)
+      return fn(null, ctx.body)
     })
   }
 
+  methods.forEach(function (method) {
+    xray[method] = function () {
+      if (!arguments.length) return crawler[method]()
+      crawler[method].apply(crawler, arguments)
+      return this
+    }
+  })
 
-  methods.forEach(function(method) {
-    xray[method] = function() {
-      if (!arguments.length) return crawler[method]();
-      crawler[method].apply(crawler, arguments);
-      return this;
-    };
-  });
-
-  return xray;
+  return xray
 }
 
 /**
@@ -269,11 +267,11 @@ function Xray() {
  * @return {Boolean|String}
  */
 
-function root(selector) {
-  return ('string' == typeof selector || isArray(selector))
-    && !~selector.indexOf('@')
-    && !isUrl(selector)
-    && selector;
+function root (selector) {
+  return (typeof selector === 'string' || isArray(selector)) &&
+  !~selector.indexOf('@') &&
+  !isUrl(selector) &&
+  selector
 }
 
 /**
@@ -284,13 +282,13 @@ function root(selector) {
  * @return {Array}
  */
 
-function compact(arr) {
-  return arr.filter(function(val) {
-    if (null == val) return false;
-    if (undefined !== val.length) return 0 !== val.length;
-    for (var key in val) if (has.call(val, key)) return true;
-    return false;
-  });
+function compact (arr) {
+  return arr.filter(function (val) {
+    if (!val) return false
+    if (val.length !== undefined) return val.length !== 0
+    for (var key in val) if (has.call(val, key)) return true
+    return false
+  })
 }
 
 /**
@@ -299,26 +297,26 @@ function compact(arr) {
  * @param {Stream} data (optional)
  */
 
-function stream_array(stream) {
-  if (!stream) return function(){};
-  var first = true;
+function stream_array (stream) {
+  if (!stream) return function () {}
+  var first = true
 
-  return function _stream_array(data, end) {
-    var json = JSON.stringify(data, true, 2);
+  return function _stream_array (data, end) {
+    var json = JSON.stringify(data, true, 2)
 
     if (first) {
-      stream.write('[\n');
-      first = false;
+      stream.write('[\n')
+      first = false
     }
 
     if (isArray(data)) {
-      json = json.slice(1, -1);
+      json = json.slice(1, -1)
     }
 
     if (end) {
-      stream.end(json + ']');
+      stream.end(json + ']')
     } else {
-      stream.write(json + ',');
+      stream.write(json + ',')
     }
   }
 }
@@ -330,17 +328,16 @@ function stream_array(stream) {
  * @return {Function}
  */
 
-function stream_object(stream) {
-  if (!stream) return function(){};
-  var first = true;
+function stream_object (stream) {
+  if (!stream) return function () {}
 
-  return function _stream_object(data, end) {
-    var json = JSON.stringify(data, true, 2);
+  return function _stream_object (data, end) {
+    var json = JSON.stringify(data, true, 2)
 
     if (end) {
-      stream.end(json);
+      stream.end(json)
     } else {
-      stream.write(json);
+      stream.write(json)
     }
   }
 }
