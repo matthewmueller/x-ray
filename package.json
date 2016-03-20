@@ -42,7 +42,6 @@
     "istanbul": "~0.4.2",
     "mocha": "latest",
     "multiline": "^1.0.2",
-    "phantomjs": "~2.1.3",
     "rimraf": "^2.3.2",
     "standard": "~6.0.8",
     "x-ray-phantom": "^1.0.0"
