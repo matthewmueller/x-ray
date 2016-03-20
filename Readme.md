@@ -99,19 +99,24 @@ x(html, 'body', 'h2', function(err, header) {
 
 Specify a `driver` to make requests through.
 
-### xray.write([path])
+### xray.stream()
 
-Stream the results to a `path`. If no path is provided, a readable stream is returned.
-This makes it easy to build APIs around x-ray. Here's an example with Express:
+Returns Readable Stream of the data. This makes it easy to build APIs around x-ray. Here's an example with Express:
 
 ```js
 var app = require('express')();
 var x = require('x-ray')();
 
 app.get('/', function(req, res) {
-  res.send(x('http://google.com', 'title').write());
+  res.send(x('http://google.com', 'title').steam());
 })
 ```
+
+### xray.write([path])
+
+Stream the results to a `path`.
+
+If no path is provided, then the behavior is the same as [.stream()](#xraystream).
 
 ### xray.paginate(selector)
 
