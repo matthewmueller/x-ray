@@ -88,7 +88,7 @@ Instead of a url, you can also supply raw HTML and all the same semantics apply.
 
 ```js
 var html = "<body><h2>Pear</h2></body>";
-x(html, 'body', 'h2', function(err, header) {
+x(html, 'body', 'h2')(function(err, header) {
   header // => Pear
 })
 ```
