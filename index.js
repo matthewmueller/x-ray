@@ -105,10 +105,12 @@ function Xray () {
           var $ = load(html, url)
           node.html($, next)
         })
-      } else {
-        // `url` is probably HTML
+      } else if (source) {
         var $ = load(source)
         node.html($, next)
+      } else {
+        debug('%s is not a url or html. Skipping!', source)
+        return node.html(load(''), next)
       }
 
       function next (err, obj, $) {
@@ -165,6 +167,7 @@ function Xray () {
     }
 
     function load (html, url) {
+      html = html || ''
       var $ = html.html ? html : cheerio.load(html)
       if (url) $ = absolutes(url, $)
       return $
