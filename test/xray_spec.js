@@ -75,6 +75,17 @@ describe('Xray basics', function () {
     })
   })
 
+  it('should work passing neither a valid URL nor valid HTML', function (done) {
+    var x = Xray()
+    x('garbageIn', {
+      title: 'title'
+    })(function (err, obj) {
+      if (err) return done(err)
+      assert.deepEqual(obj, {})
+      done()
+    })
+  })
+
   it('should work with arrays', function (done) {
     var x = Xray()
 
