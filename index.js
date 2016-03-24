@@ -11,18 +11,13 @@ var isUrl = require('is-url')
 var isArray = Array.isArray
 var fs = require('fs')
 
-function handleStreamError (stream, fn) {
-  fn(function (err) {
-    if (err) stream.emit('error', err)
-  })
-}
-
 /**
  * Locals
  */
 
 var absolutes = require('./lib/absolutes')
 var resolve = require('./lib/resolve')
+var streamHelper = require('./lib/stream')
 var params = require('./lib/params')
 var walk = require('./lib/walk')
 
@@ -69,6 +64,9 @@ function Xray () {
     var pages = []
     var stream
 
+    var walkHTML = WalkHTML(xray, selector, scope)
+    var request = Request(crawler)
+
     function node (source2, fn) {
       if (arguments.length === 1) {
         fn = source2
@@ -84,10 +82,10 @@ function Xray () {
 
       if (isUrl(source)) {
         debug('starting at: %s', source)
-        xray.request(source, function (err, html) {
+        request(source, function (err, html) {
           if (err) return next(err)
           var $ = load(html, source)
-          node.html($, next)
+          walkHTML($, next)
         })
       } else if (scope && ~scope.indexOf('@')) {
         debug('resolving to a url: %s', scope)
@@ -96,21 +94,21 @@ function Xray () {
         // ensure that a@href is a URL
         if (!isUrl(url)) {
           debug('%s is not a url. Skipping!', url)
-          return node.html(load(''), next)
+          return walkHTML(load(''), next)
         }
 
         debug('resolved "%s" to a %s', scope, url)
-        xray.request(url, function (err, html) {
+        request(url, function (err, html) {
           if (err) return next(err)
           var $ = load(html, url)
-          node.html($, next)
+          walkHTML($, next)
         })
       } else if (source) {
         var $ = load(source)
-        node.html($, next)
+        walkHTML($, next)
       } else {
         debug('%s is not a url or html. Skipping!', source)
-        return node.html(load(''), next)
+        return walkHTML(load(''), next)
       }
 
       function next (err, obj, $) {
@@ -120,8 +118,8 @@ function Xray () {
 
         // create the stream
         if (!stream) {
-          if (paginate) stream = stream_array(state.stream)
-          else stream = stream_object(state.stream)
+          if (paginate) stream = streamHelper.array(state.stream)
+          else stream = streamHelper.object(state.stream)
         }
 
         if (paginate) {
@@ -152,10 +150,10 @@ function Xray () {
           debug('paginating %j', url)
           isFinite(limit) && debug('%s page(s) left to crawl', limit)
 
-          xray.request(url, function (err, html) {
+          request(url, function (err, html) {
             if (err) return next(err)
             var $ = load(html, url)
-            node.html($, next)
+            walkHTML($, next)
           })
         } else {
           stream(obj, true)
@@ -164,54 +162,6 @@ function Xray () {
       }
 
       return node
-    }
-
-    function load (html, url) {
-      html = html || ''
-      var $ = html.html ? html : cheerio.load(html)
-      if (url) $ = absolutes(url, $)
-      return $
-    }
-
-    node.html = function ($, fn) {
-      walk(selector, function (v, k, next) {
-        if (typeof v === 'string') {
-          var value = resolve($, root(scope), v)
-          return next(null, value)
-        } else if (typeof v === 'function') {
-          return v($, function (err, obj) {
-            if (err) return next(err)
-            return next(null, obj)
-          })
-        } else if (isArray(v)) {
-          if (typeof v[0] === 'string') {
-            return next(null, resolve($, root(scope), v))
-          } else if (typeof v[0] === 'object') {
-            var $scope = $.find ? $.find(scope) : $(scope)
-            var pending = $scope.length
-            var out = []
-
-            // Handle the empty result set (thanks @jenbennings!)
-            if (!pending) return next(null, out)
-
-            $scope.each(function (i, el) {
-              var $innerscope = $scope.eq(i)
-              var node = xray(scope, v[0])
-              node($innerscope, function (err, obj) {
-                if (err) return next(err)
-                out[i] = obj
-                if (!--pending) {
-                  return next(null, compact(out))
-                }
-              })
-            })
-          }
-        }
-        return next()
-      }, function (err, obj) {
-        if (err) return fn(err)
-        fn(null, obj, $)
-      })
     }
 
     node.paginate = function (paginate) {
@@ -229,27 +179,18 @@ function Xray () {
     node.stream = function () {
       state.stream = store.createWriteStream()
       var rs = store.createReadStream()
-      handleStreamError(rs, node)
+      streamHelper.waitCb(rs, node)
       return rs
     }
 
     node.write = function (path) {
       if (!arguments.length) return node.stream()
       state.stream = fs.createWriteStream(path)
-      handleStreamError(state.stream, node)
+      streamHelper.waitCb(state.stream, node)
       return state.stream
     }
 
     return node
-  }
-
-  xray.request = function (url, fn) {
-    debug('fetching %s', url)
-    crawler(url, function (err, ctx) {
-      if (err) return fn(err)
-      debug('got response for %s with status code: %s', url, ctx.status)
-      return fn(null, ctx.body)
-    })
   }
 
   methods.forEach(function (method) {
@@ -263,13 +204,29 @@ function Xray () {
   return xray
 }
 
+function Request (crawler) {
+  return function request (url, fn) {
+    debug('fetching %s', url)
+    crawler(url, function (err, ctx) {
+      if (err) return fn(err)
+      debug('got response for %s with status code: %s', url, ctx.status)
+      return fn(null, ctx.body)
+    })
+  }
+}
+
+function load (html, url) {
+  var $ = html.html ? html : cheerio.load(html)
+  if (url) $ = absolutes(url, $)
+  return $
+}
+
 /**
  * Get the root, if there is one.
  *
  * @param {Mixed}
  * @return {Boolean|String}
  */
-
 function root (selector) {
   return (typeof selector === 'string' || isArray(selector)) &&
   !~selector.indexOf('@') &&
@@ -294,53 +251,45 @@ function compact (arr) {
   })
 }
 
-/**
- * Streaming array helper
- *
- * @param {Stream} data (optional)
- */
+function WalkHTML (xray, selector, scope) {
+  return function _walkHTML ($, fn) {
+    walk(selector, function (v, k, next) {
+      if (typeof v === 'string') {
+        var value = resolve($, root(scope), v)
+        return next(null, value)
+      } else if (typeof v === 'function') {
+        return v($, function (err, obj) {
+          if (err) return next(err)
+          return next(null, obj)
+        })
+      } else if (isArray(v)) {
+        if (typeof v[0] === 'string') {
+          return next(null, resolve($, root(scope), v))
+        } else if (typeof v[0] === 'object') {
+          var $scope = $.find ? $.find(scope) : $(scope)
+          var pending = $scope.length
+          var out = []
 
-function stream_array (stream) {
-  if (!stream) return function () {}
-  var first = true
+          // Handle the empty result set (thanks @jenbennings!)
+          if (!pending) return next(null, out)
 
-  return function _stream_array (data, end) {
-    var json = JSON.stringify(data, true, 2)
-
-    if (first) {
-      stream.write('[\n')
-      first = false
-    }
-
-    if (isArray(data)) {
-      json = json.slice(1, -1)
-    }
-
-    if (end) {
-      stream.end(json + ']')
-    } else {
-      stream.write(json + ',')
-    }
-  }
-}
-
-/**
- * Streaming object helper
- *
- * @param {Stream} data (optional)
- * @return {Function}
- */
-
-function stream_object (stream) {
-  if (!stream) return function () {}
-
-  return function _stream_object (data, end) {
-    var json = JSON.stringify(data, true, 2)
-
-    if (end) {
-      stream.end(json)
-    } else {
-      stream.write(json)
-    }
+          $scope.each(function (i, el) {
+            var $innerscope = $scope.eq(i)
+            var node = xray(scope, v[0])
+            node($innerscope, function (err, obj) {
+              if (err) return next(err)
+              out[i] = obj
+              if (!--pending) {
+                return next(null, compact(out))
+              }
+            })
+          })
+        }
+      }
+      return next()
+    }, function (err, obj) {
+      if (err) return fn(err)
+      fn(null, obj, $)
+    })
   }
 }
