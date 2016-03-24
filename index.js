@@ -4,10 +4,6 @@
 
 var Crawler = require('x-ray-crawler')
 var assign = require('object-assign')
-var compact = require('./lib/util').compact
-var isArray = require('./lib/util').isArray
-var isUrl = require('./lib/util').isUrl
-var root = require('./lib/util').root
 var enstore = require('enstore')
 var cheerio = require('cheerio')
 var fs = require('fs')
@@ -16,9 +12,13 @@ var fs = require('fs')
  * Locals
  */
 
+var compact = require('./lib/util').compact
+var isArray = require('./lib/util').isArray
 var absolutes = require('./lib/absolutes')
-var resolve = require('./lib/resolve')
 var streamHelper = require('./lib/stream')
+var isUrl = require('./lib/util').isUrl
+var resolve = require('./lib/resolve')
+var root = require('./lib/util').root
 var params = require('./lib/params')
 var walk = require('./lib/walk')
 
@@ -223,7 +223,7 @@ function load (html, url) {
 }
 
 function WalkHTML (xray, selector, scope) {
-  return function _walkHTML ($, fn) {
+  return function walkHTML ($, fn) {
     walk(selector, function (v, k, next) {
       if (typeof v === 'string') {
         var value = resolve($, root(scope), v)
