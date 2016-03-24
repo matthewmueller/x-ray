@@ -2,13 +2,14 @@
  * Module Dependencies
  */
 
-var has = Object.prototype.hasOwnProperty
 var Crawler = require('x-ray-crawler')
 var assign = require('object-assign')
-var cheerio = require('cheerio')
+var compact = require('./lib/util').compact
+var isArray = require('./lib/util').isArray
+var isUrl = require('./lib/util').isUrl
+var root = require('./lib/util').root
 var enstore = require('enstore')
-var isUrl = require('is-url')
-var isArray = Array.isArray
+var cheerio = require('cheerio')
 var fs = require('fs')
 
 /**
@@ -219,36 +220,6 @@ function load (html, url) {
   var $ = html.html ? html : cheerio.load(html)
   if (url) $ = absolutes(url, $)
   return $
-}
-
-/**
- * Get the root, if there is one.
- *
- * @param {Mixed}
- * @return {Boolean|String}
- */
-function root (selector) {
-  return (typeof selector === 'string' || isArray(selector)) &&
-  !~selector.indexOf('@') &&
-  !isUrl(selector) &&
-  selector
-}
-
-/**
- * Compact an array,
- * removing empty objects
- *
- * @param {Array} arr
- * @return {Array}
- */
-
-function compact (arr) {
-  return arr.filter(function (val) {
-    if (!val) return false
-    if (val.length !== undefined) return val.length !== 0
-    for (var key in val) if (has.call(val, key)) return true
-    return false
-  })
 }
 
 function WalkHTML (xray, selector, scope) {
