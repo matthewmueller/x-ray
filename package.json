@@ -42,7 +42,7 @@
     "mocha": "latest",
     "mocha-lcov-reporter": "~1.2.0",
     "multiline": "~1.0.2",
-    "rimraf": "~2.3.2",
+    "rimraf": "~2.5.2",
     "standard": "~6.0.8"
   },
   "engines": {
