@@ -1,4 +1,4 @@
-var Xray = require('./')
+var Xray = require('..')
 var x = Xray()
 
 x('http://google.com', {

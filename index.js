@@ -1,48 +1,30 @@
-/**
- * Module Dependencies
- */
+'use strict'
 
-var Crawler = require('x-ray-crawler')
-var assign = require('object-assign')
-var enstore = require('enstore')
-var cheerio = require('cheerio')
-var fs = require('fs')
-
-/**
- * Locals
- */
-
+var objectAssign = require('./lib/util').objectAssign
 var compact = require('./lib/util').compact
 var isArray = require('./lib/util').isArray
 var absolutes = require('./lib/absolutes')
 var streamHelper = require('./lib/stream')
 var isUrl = require('./lib/util').isUrl
+var Crawler = require('x-ray-crawler')
 var resolve = require('./lib/resolve')
 var root = require('./lib/util').root
 var params = require('./lib/params')
-var walk = require('./lib/walk')
-
-/**
- * Debugs
- */
-
 var debug = require('debug')('x-ray')
+var cheerio = require('cheerio')
+var enstore = require('enstore')
+var walk = require('./lib/walk')
+var fs = require('fs')
 
-/**
- * Crawler methods
- */
-
-var methods = ['concurrency', 'throttle', 'timeout', 'driver', 'delay', 'limit']
-
-/**
- * Export
- */
-
-module.exports = Xray
-
-/**
- * Initialize X-ray
- */
+var CONST = {
+  CRAWLER_METHODS: ['concurrency', 'throttle', 'timeout', 'driver', 'delay', 'limit'],
+  INIT_STATE: {
+    stream: false,
+    concurrency: Infinity,
+    paginate: false,
+    limit: Infinity
+  }
+}
 
 function Xray () {
   var crawler = Crawler()
@@ -53,14 +35,7 @@ function Xray () {
     source = args.source
     scope = args.context
 
-    // state
-    var state = assign({
-      stream: false,
-      concurrency: Infinity,
-      paginate: false,
-      limit: Infinity
-    }, state || {})
-
+    var state = objectAssign({}, CONST.INIT_STATE)
     var store = enstore()
     var pages = []
     var stream
@@ -194,7 +169,7 @@ function Xray () {
     return node
   }
 
-  methods.forEach(function (method) {
+  CONST.CRAWLER_METHODS.forEach(function (method) {
     xray[method] = function () {
       if (!arguments.length) return crawler[method]()
       crawler[method].apply(crawler, arguments)
@@ -264,3 +239,5 @@ function WalkHTML (xray, selector, scope) {
     })
   }
 }
+
+module.exports = Xray
