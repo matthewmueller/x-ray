@@ -26,159 +26,155 @@ var CONST = {
   }
 }
 
-function Xray () {
-  var crawler = Crawler()
+var crawler = Crawler()
 
-  function xray (source, scope, selector) {
-    var args = params(source, scope, selector)
-    selector = args.selector
-    source = args.source
-    scope = args.context
+function xray (source, scope, selector) {
+  var args = params(source, scope, selector)
+  selector = args.selector
+  source = args.source
+  scope = args.context
 
-    var state = objectAssign({}, CONST.INIT_STATE)
-    var store = enstore()
-    var pages = []
-    var stream
+  var state = objectAssign({}, CONST.INIT_STATE)
+  var store = enstore()
+  var pages = []
+  var stream
 
-    var walkHTML = WalkHTML(xray, selector, scope)
-    var request = Request(crawler)
+  var walkHTML = WalkHTML(xray, selector, scope)
+  var request = Request(crawler)
 
-    function node (source2, fn) {
-      if (arguments.length === 1) {
-        fn = source2
-      } else {
-        source = source2
+  function node (source2, fn) {
+    if (arguments.length === 1) {
+      fn = source2
+    } else {
+      source = source2
+    }
+
+    debug('params: %j', {
+      source: source,
+      scope: scope,
+      selector: selector
+    })
+
+    if (isUrl(source)) {
+      debug('starting at: %s', source)
+      request(source, function (err, html) {
+        if (err) return next(err)
+        var $ = load(html, source)
+        walkHTML($, next)
+      })
+    } else if (scope && ~scope.indexOf('@')) {
+      debug('resolving to a url: %s', scope)
+      var url = resolve(source, false, scope)
+
+      // ensure that a@href is a URL
+      if (!isUrl(url)) {
+        debug('%s is not a url. Skipping!', url)
+        return walkHTML(load(''), next)
       }
 
-      debug('params: %j', {
-        source: source,
-        scope: scope,
-        selector: selector
+      debug('resolved "%s" to a %s', scope, url)
+      request(url, function (err, html) {
+        if (err) return next(err)
+        var $ = load(html, url)
+        walkHTML($, next)
       })
+    } else if (source) {
+      var $ = load(source)
+      walkHTML($, next)
+    } else {
+      debug('%s is not a url or html. Skipping!', source)
+      return walkHTML(load(''), next)
+    }
 
-      if (isUrl(source)) {
-        debug('starting at: %s', source)
-        request(source, function (err, html) {
-          if (err) return next(err)
-          var $ = load(html, source)
-          walkHTML($, next)
-        })
-      } else if (scope && ~scope.indexOf('@')) {
-        debug('resolving to a url: %s', scope)
-        var url = resolve(source, false, scope)
+    function next (err, obj, $) {
+      if (err) return fn(err)
+      var paginate = state.paginate
+      var limit = --state.limit
 
-        // ensure that a@href is a URL
-        if (!isUrl(url)) {
-          debug('%s is not a url. Skipping!', url)
-          return walkHTML(load(''), next)
+      // create the stream
+      if (!stream) {
+        if (paginate) stream = streamHelper.array(state.stream)
+        else stream = streamHelper.object(state.stream)
+      }
+
+      if (paginate) {
+        if (isArray(obj)) {
+          pages = pages.concat(obj)
+        } else {
+          pages.push(obj)
         }
 
-        debug('resolved "%s" to a %s', scope, url)
+        if (limit <= 0) {
+          debug('reached limit, ending')
+          stream(obj, true)
+          return fn(null, pages)
+        }
+
+        var url = resolve($, false, paginate)
+        debug('paginate(%j) => %j', paginate, url)
+
+        if (!isUrl(url)) {
+          debug('%j is not a url, finishing up', url)
+          stream(obj, true)
+          return fn(null, pages)
+        }
+
+        stream(obj)
+
+        // debug
+        debug('paginating %j', url)
+        isFinite(limit) && debug('%s page(s) left to crawl', limit)
+
         request(url, function (err, html) {
           if (err) return next(err)
           var $ = load(html, url)
           walkHTML($, next)
         })
-      } else if (source) {
-        var $ = load(source)
-        walkHTML($, next)
       } else {
-        debug('%s is not a url or html. Skipping!', source)
-        return walkHTML(load(''), next)
+        stream(obj, true)
+        fn(null, obj)
       }
-
-      function next (err, obj, $) {
-        if (err) return fn(err)
-        var paginate = state.paginate
-        var limit = --state.limit
-
-        // create the stream
-        if (!stream) {
-          if (paginate) stream = streamHelper.array(state.stream)
-          else stream = streamHelper.object(state.stream)
-        }
-
-        if (paginate) {
-          if (isArray(obj)) {
-            pages = pages.concat(obj)
-          } else {
-            pages.push(obj)
-          }
-
-          if (limit <= 0) {
-            debug('reached limit, ending')
-            stream(obj, true)
-            return fn(null, pages)
-          }
-
-          var url = resolve($, false, paginate)
-          debug('paginate(%j) => %j', paginate, url)
-
-          if (!isUrl(url)) {
-            debug('%j is not a url, finishing up', url)
-            stream(obj, true)
-            return fn(null, pages)
-          }
-
-          stream(obj)
-
-          // debug
-          debug('paginating %j', url)
-          isFinite(limit) && debug('%s page(s) left to crawl', limit)
-
-          request(url, function (err, html) {
-            if (err) return next(err)
-            var $ = load(html, url)
-            walkHTML($, next)
-          })
-        } else {
-          stream(obj, true)
-          fn(null, obj)
-        }
-      }
-
-      return node
-    }
-
-    node.paginate = function (paginate) {
-      if (!arguments.length) return state.paginate
-      state.paginate = paginate
-      return node
-    }
-
-    node.limit = function (limit) {
-      if (!arguments.length) return state.limit
-      state.limit = limit
-      return node
-    }
-
-    node.stream = function () {
-      state.stream = store.createWriteStream()
-      var rs = store.createReadStream()
-      streamHelper.waitCb(rs, node)
-      return rs
-    }
-
-    node.write = function (path) {
-      if (!arguments.length) return node.stream()
-      state.stream = fs.createWriteStream(path)
-      streamHelper.waitCb(state.stream, node)
-      return state.stream
     }
 
     return node
   }
 
-  CONST.CRAWLER_METHODS.forEach(function (method) {
-    xray[method] = function () {
-      if (!arguments.length) return crawler[method]()
-      crawler[method].apply(crawler, arguments)
-      return this
-    }
-  })
+  node.paginate = function (paginate) {
+    if (!arguments.length) return state.paginate
+    state.paginate = paginate
+    return node
+  }
 
-  return xray
+  node.limit = function (limit) {
+    if (!arguments.length) return state.limit
+    state.limit = limit
+    return node
+  }
+
+  node.stream = function () {
+    state.stream = store.createWriteStream()
+    var rs = store.createReadStream()
+    streamHelper.waitCb(rs, node)
+    return rs
+  }
+
+  node.write = function (path) {
+    if (!arguments.length) return node.stream()
+    state.stream = fs.createWriteStream(path)
+    streamHelper.waitCb(state.stream, node)
+    return state.stream
+  }
+
+  return node
 }
+
+CONST.CRAWLER_METHODS.forEach(function (method) {
+  xray[method] = function () {
+    if (!arguments.length) return crawler[method]()
+    crawler[method].apply(crawler, arguments)
+    return this
+  }
+})
 
 function Request (crawler) {
   return function request (url, fn) {
@@ -240,4 +236,4 @@ function WalkHTML (xray, selector, scope) {
   }
 }
 
-module.exports = Xray
+module.exports = xray

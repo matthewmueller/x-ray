@@ -26,12 +26,11 @@ var url = 'http://lapwinglabs.github.io/static/'
 
 describe('Xray basics', function () {
   it('should work with the kitchen sink', function (done) {
-    var x = Xray()
-    x({
+    Xray({
       title: 'title@text',
-      image: x('#gbar a@href', 'title'),
-      scoped_title: x('head', 'title'),
-      inner: x('title', {
+      image: Xray('#gbar a@href', 'title'),
+      scoped_title: Xray('head', 'title'),
+      inner: Xray('title', {
         title: '@text'
       })
     })('http://www.google.com/ncr', function (err, obj) {
@@ -45,11 +44,9 @@ describe('Xray basics', function () {
   })
 
   it('should work with embedded x-ray instances', function (done) {
-    var x = Xray()
-
-    x({
-      list: x('body', {
-        first: x('a@href', 'title')
+    Xray({
+      list: Xray('body', {
+        first: Xray('a@href', 'title')
       })
     })(url, function (err, obj) {
       if (err) return done(err)
@@ -63,8 +60,7 @@ describe('Xray basics', function () {
   })
 
   it('should work without passing a URL in the callback', function (done) {
-    var x = Xray()
-    x('http://google.com', {
+    Xray('http://google.com', {
       title: 'title'
     })(function (err, obj) {
       if (err) return done(err)
@@ -76,8 +72,7 @@ describe('Xray basics', function () {
   })
 
   it('should work passing neither a valid URL nor valid HTML', function (done) {
-    var x = Xray()
-    x('garbageIn', {
+    Xray('garbageIn', {
       title: 'title'
     })(function (err, obj) {
       if (err) return done(err)
@@ -87,9 +82,7 @@ describe('Xray basics', function () {
   })
 
   it('should work with arrays', function (done) {
-    var x = Xray()
-
-    x(url, ['a@href'])(function (err, arr) {
+    Xray(url, ['a@href'])(function (err, arr) {
       if (err) return done(err)
       assert.equal(50, arr.length)
       assert.equal('http://loripsum.net/', arr.pop())
@@ -101,9 +94,7 @@ describe('Xray basics', function () {
   })
 
   it('should work with an array without a url', function (done) {
-    var x = Xray()
-
-    x(['a@href'])(url, function (err, arr) {
+    Xray(['a@href'])(url, function (err, arr) {
       if (err) return done(err)
       assert.equal(50, arr.length)
       assert.equal('http://loripsum.net/', arr.pop())
@@ -115,9 +106,7 @@ describe('Xray basics', function () {
   })
 
   it('arrays should work with a simple selector', function (done) {
-    var x = Xray()
-
-    x('a', [{ link: '@href' }])(url, function (err, arr) {
+    Xray('a', [{ link: '@href' }])(url, function (err, arr) {
       if (err) return done(err)
       assert.equal(50, arr.length)
       assert.deepEqual({ link: 'http://loripsum.net/' }, arr.pop())
@@ -131,8 +120,7 @@ describe('Xray basics', function () {
   it('should select items with a scope', function (done) {
     var html = '<ul class="tags"><li>a</li><li>b</li><li>c</li></ul><ul class="tags"><li>d</li><li>e</li></ul>'
     var $ = cheerio.load(html)
-    var x = Xray()
-    x('.tags', ['li'])($, function (err, arr) {
+    Xray('.tags', ['li'])($, function (err, arr) {
       if (err) return done(err)
       assert.equal(5, arr.length)
       assert.equal('a', arr[0])
@@ -147,9 +135,7 @@ describe('Xray basics', function () {
   it('should select lists separately too', function (done) {
     var html = '<ul class="tags"><li>a</li><li>b</li><li>c</li></ul><ul class="tags"><li>d</li><li>e</li></ul>'
     var $ = cheerio.load(html)
-    var x = Xray()
-
-    x('.tags', [['li']])($, function (err, arr) {
+    Xray('.tags', [['li']])($, function (err, arr) {
       if (err) return done(err)
       assert(arr[0].length === 3)
       assert(arr[0][0] === 'a')
@@ -184,11 +170,10 @@ describe('Xray basics', function () {
     */}) // eslint-disable-line
 
     var $ = cheerio.load(html)
-    var x = Xray()
 
-    x($, '.item', [{
+    Xray($, '.item', [{
       title: 'h2',
-      tags: x('.tags', ['li'])
+      tags: Xray('.tags', ['li'])
     }])(function (err, arr) {
       if (err) return done(err)
       assert.deepEqual([
@@ -202,10 +187,9 @@ describe('Xray basics', function () {
   // TODO: Rewrite test, mat.io hasn't the same content.
   xit('should work with complex selections', function (done) {
     this.timeout(10000)
-    var x = Xray()
-    x('http://mat.io', {
+    Xray('http://mat.io', {
       title: 'title',
-      items: x('.item', [{
+      items: Xray('.item', [{
         title: '.item-content h2',
         description: '.item-content section'
       }])
@@ -236,9 +220,8 @@ describe('Xray basics', function () {
   // with pages
   it('should work with pagination & limits', function (done) {
     this.timeout(10000)
-    var x = Xray()
 
-    var xray = x('https://dribbble.com', 'li.group', [{
+    var xray = Xray('https://dribbble.com', 'li.group', [{
       title: '.dribbble-img strong',
       image: '.dribbble-img [data-src]@data-src'
     }])
@@ -261,9 +244,8 @@ describe('Xray basics', function () {
     this.timeout(10000)
     setTimeout(done, 9000)
     var timesCalled = 0
-    var x = Xray()
 
-    x('https://github.com/lapwinglabs/x-ray/watchers', '.follow-list-item', [{
+    Xray('https://github.com/lapwinglabs/x-ray/watchers', '.follow-list-item', [{
       fullName: '.vcard-username'
     }]).paginate('.next_page@href').limit(10)
     ;(function (err, arr) {
@@ -283,9 +265,7 @@ describe('Xray basics', function () {
     it('write should work with streams', function (done) {
       var html = '<ul class="tags"><li>a</li><li>b</li><li>c</li></ul><ul class="tags"><li>d</li><li>e</li></ul>'
       var $ = cheerio.load(html)
-      var x = Xray()
-
-      var xray = x($, '.tags', [['li']])
+      var xray = Xray($, '.tags', [['li']])
 
       xray
         .stream()
@@ -304,9 +284,8 @@ describe('Xray basics', function () {
 
     it('write should work with pagination', function (done) {
       this.timeout(10000)
-      var x = Xray()
 
-      var xray = x('https://dribbble.com', 'li.group', [{
+      var xray = Xray('https://dribbble.com', 'li.group', [{
         title: '.dribbble-img strong',
         image: '.dribbble-img [data-src]@data-src'
       }])
@@ -334,39 +313,43 @@ describe('Xray basics', function () {
       var path = join(__dirname, 'tags.json')
       var html = '<ul class="tags"><li>a</li><li>b</li><li>c</li></ul><ul class="tags"><li>d</li><li>e</li></ul>'
       var $ = cheerio.load(html)
-      var x = Xray()
 
-      x($, '.tags', [['li']]).write(path).on('finish', function () {
-        var arr = JSON.parse(read(path, 'utf8'))
-        assert(arr[0].length === 3)
-        assert(arr[0][0] === 'a')
-        assert(arr[0][1] === 'b')
-        assert(arr[0][2] === 'c')
-        assert(arr[1].length === 2)
-        assert(arr[1][0] === 'd')
-        assert(arr[1][1] === 'e')
-        rm(path)
-        done()
-      })
+      Xray($, '.tags', [['li']])
+        .write(path)
+        .on('finish', function () {
+          var arr = JSON.parse(read(path, 'utf8'))
+          assert(arr[0].length === 3)
+          assert(arr[0][0] === 'a')
+          assert(arr[0][1] === 'b')
+          assert(arr[0][2] === 'c')
+          assert(arr[1].length === 2)
+          assert(arr[1][0] === 'd')
+          assert(arr[1][1] === 'e')
+          rm(path)
+          done()
+        })
     })
     it('stream to a file with pagination', function (done) {
       var path = join(__dirname, 'pagination.json')
       this.timeout(10000)
-      var x = Xray()
 
-      x('https://dribbble.com', 'li.group', [{
+      Xray('https://dribbble.com', 'li.group', [{
         title: '.dribbble-img strong',
         image: '.dribbble-img [data-src]@data-src'
-      }]).paginate('.next_page@href').limit(3).write(path).on('finish', function () {
-        var arr = JSON.parse(read(path, 'utf8'))
-        assert(arr.length, 'array should have a length')
-        arr.forEach(function (item) {
-          assert(item.title.length)
-          assert.equal(true, isUrl(item.image))
+      }])
+        .paginate('.next_page@href')
+        .limit(3)
+        .write(path)
+        .on('finish', function () {
+          var arr = JSON.parse(read(path, 'utf8'))
+          assert(arr.length, 'array should have a length')
+          arr.forEach(function (item) {
+            assert(item.title.length)
+            assert.equal(true, isUrl(item.image))
+          })
+          rm(path)
+          done()
         })
-        rm(path)
-        done()
-      })
     })
   })
 })
