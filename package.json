@@ -42,17 +42,16 @@
     "mocha": "latest",
     "mocha-lcov-reporter": "~1.2.0",
     "multiline": "~1.0.2",
-    "rimraf": "~2.5.2",
-    "standard": "~6.0.8",
-    "x-ray-phantom": "~1.0.0"
+    "rimraf": "~2.3.2",
+    "standard": "~6.0.8"
   },
   "engines": {
     "node": ">= 0.10"
   },
   "scripts": {
+    "coveralls": "./node_modules/.bin/istanbul cover ./node_modules/.bin/_mocha --report lcovonly",
     "pretest": "standard",
-    "test": "mocha",
-    "coveralls": "./node_modules/.bin/istanbul cover ./node_modules/.bin/_mocha --report lcovonly"
+    "test": "mocha"
   },
   "license": "MIT"
 }
