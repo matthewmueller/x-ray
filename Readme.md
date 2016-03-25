@@ -203,11 +203,11 @@ x('http://mat.io', {
 
 ## Examples
 
-- [selector](/examples/selector.js): simple string selector
-- [collections](/examples/collections.js): selects an object
-- [array](/examples/arrays.js): selects an array
-- [collections of collections](/examples/collection-of-collections.js): selects an array of objects
-- [array of arrays](/examples/array-of-arrays.js): selects an array of arrays
+- [selector](/examples/selector/index.js): simple string selector
+- [collections](/examples/collections/index.js): selects an object
+- [arrays](/examples/arrays/index.js): selects an array
+- [collections of collections](/examples/collection-of-collections/index.js): selects an array of objects
+- [array of arrays](/examples/array-of-arrays/index.js): selects an array of arrays
 
 ## In the Wild
 
