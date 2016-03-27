@@ -1,6 +1,9 @@
 'use strict'
 
 var objectAssign = require('./lib/util').objectAssign
+var isFunction = require('./lib/util').isFunction
+var isString = require('./lib/util').isString
+var isObject = require('./lib/util').isObject
 var compact = require('./lib/util').compact
 var isArray = require('./lib/util').isArray
 var absolutes = require('./lib/absolutes')
@@ -10,11 +13,14 @@ var Crawler = require('x-ray-crawler')
 var resolve = require('./lib/resolve')
 var root = require('./lib/util').root
 var params = require('./lib/params')
-var debug = require('debug')('x-ray')
 var cheerio = require('cheerio')
 var enstore = require('enstore')
 var walk = require('./lib/walk')
 var fs = require('fs')
+
+var debug = require('debug')('x-ray')
+var debugRequest = require('debug')('x-ray:request')
+var debugWalk = require('debug')('xray:walkHTML')
 
 var CONST = {
   CRAWLER_METHODS: ['concurrency', 'throttle', 'timeout', 'driver', 'delay', 'limit'],
@@ -56,7 +62,7 @@ function xray (source, scope, selector) {
     })
 
     if (isUrl(source)) {
-      debug('starting at: %s', source)
+      debug('detected URL')
       request(source, function (err, html) {
         if (err) return next(err)
         var $ = load(html, source)
@@ -79,6 +85,7 @@ function xray (source, scope, selector) {
         walkHTML($, next)
       })
     } else if (source) {
+      debug('detected source')
       var $ = load(source)
       walkHTML($, next)
     } else {
@@ -178,10 +185,10 @@ CONST.CRAWLER_METHODS.forEach(function (method) {
 
 function Request (crawler) {
   return function request (url, fn) {
-    debug('fetching %s', url)
+    debugRequest('fetching %s', url)
     crawler(url, function (err, ctx) {
       if (err) return fn(err)
-      debug('got response for %s with status code: %s', url, ctx.status)
+      debugRequest('got response for %s with status code: %s', url, ctx.status)
       return fn(null, ctx.body)
     })
   }
@@ -194,25 +201,26 @@ function load (html, url) {
 }
 
 function WalkHTML (xray, selector, scope) {
+  debugWalk('bind')
+  debugWalk('selector: %j', selector)
+  debugWalk('scope: %s', scope)
+
   return function walkHTML ($, fn) {
+    debugWalk('start a new walk')
+
     walk(selector, function (v, k, next) {
-      if (typeof v === 'string') {
-        var value = resolve($, root(scope), v)
-        return next(null, value)
-      } else if (typeof v === 'function') {
-        return v($, function (err, obj) {
-          if (err) return next(err)
-          return next(null, obj)
-        })
-      } else if (isArray(v)) {
-        if (typeof v[0] === 'string') {
-          return next(null, resolve($, root(scope), v))
-        } else if (typeof v[0] === 'object') {
+      debugWalk('structure: %j', v)
+      debugWalk('data: %j', k)
+
+      function walkFromArray (v, next) {
+        if (isString(v[0])) {
+          return walkFromString(v, next)
+        } else if (isArray(v[0]) || isObject(v[0])) {
+          debugWalk('walk is collection')
           var $scope = $.find ? $.find(scope) : $(scope)
           var pending = $scope.length
           var out = []
 
-          // Handle the empty result set (thanks @jenbennings!)
           if (!pending) return next(null, out)
 
           $scope.each(function (i, el) {
@@ -221,17 +229,35 @@ function WalkHTML (xray, selector, scope) {
             node($innerscope, function (err, obj) {
               if (err) return next(err)
               out[i] = obj
-              if (!--pending) {
-                return next(null, compact(out))
-              }
+              if (!--pending) return next(null, compact(out))
             })
           })
         }
       }
+
+      function walkFromString (v, next) {
+        debugWalk('walk is string')
+        var value = resolve($, root(scope), v)
+        return next(null, value)
+      }
+
+      function walkFromFunction (v, next) {
+        debugWalk('walk is function')
+        return v($, next)
+      }
+
+      if (isString(v)) {
+        return walkFromString(v, next)
+      } else if (isArray(v)) {
+        return walkFromArray(v, next)
+      } else if (isFunction(v)) {
+        return walkFromFunction(v, next)
+      }
+
+      debugWalk('not detected walk')
       return next()
     }, function (err, obj) {
-      if (err) return fn(err)
-      fn(null, obj, $)
+      return fn(err, obj, $)
     })
   }
 }
