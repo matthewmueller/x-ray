@@ -1,3 +1,15 @@
+<a name="2.1.1"></a>
+## 2.1.1 (2016-03-29)
+
+* delete unnecessary fixture ([85a42a7](https://github.com/lapwinglabs/x-ray/commit/85a42a7))
+* Extra util.isObject method ([cd56198](https://github.com/lapwinglabs/x-ray/commit/cd56198))
+* Fix #162 ([7484e20](https://github.com/lapwinglabs/x-ray/commit/7484e20)), closes [#162](https://github.com/lapwinglabs/x-ray/issues/162)
+* fix example links in readme ([29ab95e](https://github.com/lapwinglabs/x-ray/commit/29ab95e))
+* Setup correctly init state ([0c3f421](https://github.com/lapwinglabs/x-ray/commit/0c3f421))
+* upgrade rimraf ([43c2eb9](https://github.com/lapwinglabs/x-ray/commit/43c2eb9))
+
+
+
 <a name="2.1.0"></a>
 # 2.1.0 (2016-03-25)
 
