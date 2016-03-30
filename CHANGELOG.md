@@ -1,3 +1,12 @@
+<a name="2.2.0"></a>
+# 2.2.0 (2016-03-30)
+
+* fix error when html is null ([f73990f](https://github.com/lapwinglabs/x-ray/commit/f73990f))
+* Fix style ([636d4f0](https://github.com/lapwinglabs/x-ray/commit/636d4f0))
+* run pretest on travis ([21eabfb](https://github.com/lapwinglabs/x-ray/commit/21eabfb))
+
+
+
 <a name="2.1.1"></a>
 ## 2.1.1 (2016-03-29)
 
