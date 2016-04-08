@@ -26,8 +26,10 @@ var CONST = {
   }
 }
 
-function Xray () {
+function Xray (options) {
   var crawler = Crawler()
+  options = options || {}
+  var filters = options.filters || {}
 
   function xray (source, scope, selector) {
     var args = params(source, scope, selector)
@@ -40,7 +42,7 @@ function Xray () {
     var pages = []
     var stream
 
-    var walkHTML = WalkHTML(xray, selector, scope)
+    var walkHTML = WalkHTML(xray, selector, scope, filters)
     var request = Request(crawler)
 
     function node (source2, fn) {
@@ -65,7 +67,7 @@ function Xray () {
         })
       } else if (scope && ~scope.indexOf('@')) {
         debug('resolving to a url: %s', scope)
-        var url = resolve(source, false, scope)
+        var url = resolve(source, false, scope, filters)
 
         // ensure that a@href is a URL
         if (!isUrl(url)) {
@@ -111,7 +113,7 @@ function Xray () {
             return fn(null, pages)
           }
 
-          var url = resolve($, false, paginate)
+          var url = resolve($, false, paginate, filters)
           debug('paginate(%j) => %j', paginate, url)
 
           if (!isUrl(url)) {
@@ -198,11 +200,11 @@ function load (html, url) {
   return $
 }
 
-function WalkHTML (xray, selector, scope) {
+function WalkHTML (xray, selector, scope, filters) {
   return function walkHTML ($, fn) {
     walk(selector, function (v, k, next) {
       if (typeof v === 'string') {
-        var value = resolve($, root(scope), v)
+        var value = resolve($, root(scope), v, filters)
         return next(null, value)
       } else if (typeof v === 'function') {
         return v($, function (err, obj) {
@@ -211,7 +213,7 @@ function WalkHTML (xray, selector, scope) {
         })
       } else if (isArray(v)) {
         if (typeof v[0] === 'string') {
-          return next(null, resolve($, root(scope), v))
+          return next(null, resolve($, root(scope), v, filters))
         } else if (typeof v[0] === 'object') {
           var $scope = $.find ? $.find(scope) : $(scope)
           var pending = $scope.length
