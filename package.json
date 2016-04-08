@@ -6,8 +6,12 @@
   "main": "index.js",
   "author": {
     "name": "Matthew Mueller",
-    "email": "matt@lapwinglabs.cm"
+    "email": "matt@lapwinglabs.com"
   },
+  "contributors": [{
+    "name": "Fabien Franzen",
+    "email": "info@atelierfabien.be"
+  }],
   "repository": {
     "type": "git",
     "url": "git://github.com/lapwinglabs/x-ray.git"
