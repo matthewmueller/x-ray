@@ -10,16 +10,15 @@
 
 
 ```js
-var Xray = require('x-ray');
-var x = Xray();
+var XrayModule = require('x-ray');
+var xray = Xray();
 
-x('https://dribbble.com', 'li.group', [{
+var node = xray('https://dribbble.com', 'li.group', [{
   title: '.dribbble-img strong',
   image: '.dribbble-img [data-src]@data-src',
-}])
-  .paginate('.next_page@href')
-  .limit(3)
-  .write('results.json')
+}]).paginate('.next_page@href').limit(3);
+
+node.write('results.json')
 ```
 
 ## Installation
@@ -99,7 +98,15 @@ x(html, 'body', 'h2')(function(err, header) {
 
 Specify a `driver` to make requests through.
 
-### xray.stream()
+```js
+var x = require( 'x-ray' )( phantomjs );
+```
+
+Available drivers include:
+
+- [phantom driver](https://github.com/lapwinglabs/x-ray-phantom)
+
+### node.stream()
 
 Returns Readable Stream of the data. This makes it easy to build APIs around x-ray. Here's an example with Express:
 
@@ -112,21 +119,23 @@ app.get('/', function(req, res) {
 })
 ```
 
-### xray.write([path])
+### node.write([path])
 
 Stream the results to a `path`.
 
 If no path is provided, then the behavior is the same as [.stream()](#xraystream).
 
-### xray.paginate(selector)
+### node.paginate(selector)
 
-Select a `url` from a `selector` and visit that page. Available drivers include:
+Select a `url` from a `selector` and visit that page.
 
-- [phantom driver](https://github.com/lapwinglabs/x-ray-phantom)
+### node.limit(n)
+
+Limit the amount of pagination to `n` requests.
 
 ### xray.limit(n)
 
-Limit the amount of pagination to `n` requests.
+Limit the total number of requests that can be made by this xray instance.
 
 ### xray.delay(from, [to])
 
