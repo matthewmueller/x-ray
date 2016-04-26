@@ -1,3 +1,12 @@
+<a name="2.3.0"></a>
+# 2.3.0 (2016-04-26)
+
+* fix README code in 'Collections' ([3a8470c](https://github.com/lapwinglabs/x-ray/commit/3a8470c))
+* Support x-ray-parse filters ([0fa5093](https://github.com/lapwinglabs/x-ray/commit/0fa5093))
+* Update Readme and contributors ([faabc13](https://github.com/lapwinglabs/x-ray/commit/faabc13))
+
+
+
 <a name="2.2.0"></a>
 # 2.2.0 (2016-03-30)
 
