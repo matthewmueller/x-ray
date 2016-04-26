@@ -232,6 +232,36 @@ describe('Xray basics', function () {
     })
   })
 
+  it('should apply filters', function (done) {
+    var html = '<h3> All Tags </h3><ul class="tags"><li> a</li><li> b </li><li>c </li></ul><ul class="tags"><li>\nd</li><li>e</li></ul>'
+    var $ = cheerio.load(html)
+    var x = Xray({
+      filters: {
+        trim: function (value) {
+          return typeof value === 'string' ? value.trim() : value
+        },
+        slice: function (value, limit) {
+          return typeof value === 'string' ? value.slice(0, limit) : value
+        },
+        reverse: function (value) {
+          return typeof value === 'string' ? value.split('').reverse().join('') : value
+        }
+      }
+    })
+
+    x($, {
+      title: 'h3 | trim | reverse | slice:4',
+      tags: ['.tags > li | trim']
+    })(function (err, obj) {
+      if (err) return done(err)
+      assert.deepEqual(obj, {
+        title: 'sgaT',
+        tags: ['a', 'b', 'c', 'd', 'e']
+      })
+      done()
+    })
+  })
+
   // TODO: this could be tested better, need a static site
   // with pages
   it('should work with pagination & limits', function (done) {

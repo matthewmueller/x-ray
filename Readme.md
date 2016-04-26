@@ -201,6 +201,37 @@ x('http://mat.io', {
 })
 ```
 
+### Filters
+
+Filters can specified when creating a new Xray instance. To apply filters to a value, append them to the selector using `|`.
+
+```js
+var Xray = require('x-ray');
+var x = Xray({
+  filters: {
+    trim: function (value) {
+      return typeof value === 'string' ? value.trim() : value
+    },
+    reverse: function (value) {
+      return typeof value === 'string' ? value.split('').reverse().join('') : value
+    },
+    slice: function (value, limit) {
+      return typeof value === 'string' ? value.slice(0, limit) : value
+    }
+  }
+});
+
+x('http://mat.io', {
+  title: 'title | trim | reverse | limit:2'
+})(function(err, obj) {
+/*
+  {
+    title: 'oi'
+  }
+*/
+})
+```
+
 ## Examples
 
 - [selector](/examples/selector/index.js): simple string selector
