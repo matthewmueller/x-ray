@@ -147,7 +147,7 @@ Specify a timeout of `ms` milliseconds for each request.
 
 ## Collections
 
-X-ray also has support for selecting collections of tags. While `x(ul', 'li')` will only select the first list item in an unordered list, `x(ul, ['li'])` will select all of them.
+X-ray also has support for selecting collections of tags. While `x('ul', 'li')` will only select the first list item in an unordered list, `x('ul', ['li'])` will select all of them.
 
 Additionally, X-ray supports "collections of collections" allowing you to smartly select all list items in all lists with a command like this: `x(['ul'], ['li'])`.
 
