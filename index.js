@@ -233,6 +233,13 @@ function WalkHTML (xray, selector, scope, filters) {
               }
             })
           })
+          
+          // Nested crawling broken on 'master'. When to merge 'bugfix/nested-crawling' #111
+          // -------------------------------------------------------------------------------
+          // Needed to exit this without calling next, the problem was that it returned to 
+          // the "finished" callback before it had retrived all pending request. it should
+          // wait for "return next(null, compact(out))"
+          return;
         }
       }
       return next()
