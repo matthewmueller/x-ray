@@ -108,7 +108,8 @@ var app = require('express')();
 var x = require('x-ray')();
 
 app.get('/', function(req, res) {
-  res.send(x('http://google.com', 'title').stream());
+  var stream = x('http://google.com', 'title').stream();
+  stream.pipe(res);
 })
 ```
 
