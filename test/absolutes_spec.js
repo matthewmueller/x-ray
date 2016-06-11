@@ -24,7 +24,12 @@ describe('absolute URLs', function () {
   it('should convert relative URL', function () {
     var $el = cheerio.load('<a href="bar.html"></a>')
     assert.equal('<a href="http://example.com/bar.html"></a>', absolute(path, $el).html())
-  })
+  });
+
+  it('should not throw when encountering invalid URLs', function () {
+    var $el = cheerio.load('<html><body><ul><li><a href="mailto:%CAbroken@link.com">Broken link</a></li></ul></body></html>');
+    absolute(path, $el);
+  });
 })
 
 describe('absolute URLs with <base> tag', function () {
