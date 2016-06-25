@@ -216,8 +216,8 @@ var x = Xray({
     reverse: function (value) {
       return typeof value === 'string' ? value.split('').reverse().join('') : value
     },
-    slice: function (value, start , limit) {
-      return typeof value === 'string' ? value.slice(start, limit) : value
+    slice: function (value, start , end) {
+      return typeof value === 'string' ? value.slice(start, end) : value
     }
   }
 });
