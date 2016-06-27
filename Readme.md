@@ -216,14 +216,14 @@ var x = Xray({
     reverse: function (value) {
       return typeof value === 'string' ? value.split('').reverse().join('') : value
     },
-    slice: function (value, limit) {
-      return typeof value === 'string' ? value.slice(0, limit) : value
+    slice: function (value, start , end) {
+      return typeof value === 'string' ? value.slice(start, end) : value
     }
   }
 });
 
 x('http://mat.io', {
-  title: 'title | trim | reverse | limit:2'
+  title: 'title | trim | reverse | slice:2,3'
 })(function(err, obj) {
 /*
   {
