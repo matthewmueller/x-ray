@@ -99,7 +99,10 @@ x(html, 'body', 'h2')(function(err, header) {
 
 ### xray.driver(driver)
 
-Specify a `driver` to make requests through.
+Specify a `driver` to make requests through. Available drivers include:
+
+- [request](https://github.com/Crazometer/request-x-ray) - A simple driver built around request. Use this to set headers, cookies or http methods.
+- [phantom](https://github.com/lapwinglabs/x-ray-phantom) - A high-level browser automation library. Use this to render pages or when elements need to be interacted with, or when elements are created dynamically using javascript (e.g.: Ajax-calls).
 
 ### xray.stream()
 
@@ -123,9 +126,7 @@ If no path is provided, then the behavior is the same as [.stream()](#xraystream
 
 ### xray.paginate(selector)
 
-Select a `url` from a `selector` and visit that page. Available drivers include:
-
-- [phantom driver](https://github.com/lapwinglabs/x-ray-phantom)
+Select a `url` from a `selector` and visit that page.
 
 ### xray.limit(n)
 
