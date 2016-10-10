@@ -32,12 +32,12 @@
   "dependencies": {
     "batch": "~0.5.2",
     "chalk": "~1.1.1",
-    "cheerio": "~0.20.0",
+    "cheerio": "0.20.0",
     "debug": "~2.2.0",
     "enstore": "~1.0.1",
     "is-url": "~1.2.0",
-    "isobject": "~2.0.0",
-    "object-assign": "~4.0.1",
+    "isobject": "2.1.0",
+    "object-assign": "4.1.0",
     "x-ray-crawler": "~2.0.1",
     "x-ray-parse": "~1.0.1"
   },
@@ -49,7 +49,7 @@
     "mocha-lcov-reporter": "~1.2.0",
     "multiline": "~1.0.2",
     "rimraf": "~2.5.2",
-    "standard": "~6.0.8"
+    "standard": "8.3.0"
   },
   "engines": {
     "node": ">= 0.10"
