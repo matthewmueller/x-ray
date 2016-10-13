@@ -1,3 +1,28 @@
+<a name="2.3.1"></a>
+# 2.3.1 (2016-10-13)
+
+  * Merge pull request #181 from Muscot/master
+  * Merge pull request #209 from Crazometer/readme-driver-fix
+  * Clarification suggested by @gebrits
+  * Merge pull request #216 from 600rr/patch-1
+  * Update index.js
+  * Moved driver list to correct place and added request driver.
+  * Merge pull request #179 from fatman-/patch-1
+  * Merge pull request #191 from piamancini/patch-1
+  * Merge pull request #192 from GeoffreyEmery/patch-1
+  * update to readme
+  * Update Read.me
+  * Added backers and sponsors from OpenCollective
+  * Merge pull request #190 from davidarnarsson/master
+  * Fixed spaces
+  * Fixed coding style
+  * Fixes a problem when encountering malformed URLs while "absolutizing" urls in a document.
+  * Merge pull request #186 from wayneashleyberry/patch-1
+  * Update Readme.md
+  * Moved example follow.js to a folder crawler that test to follow many links and retrieve information. Changed to standard js.
+  *           // Nested crawling broken on 'master'. When to merge 'bugfix/nested-crawling' #111           // -------------------------------------------------------------------------------           // Needed to exit this without calling next, the problem was that it returned to           // the "finished" callback before it had retrived all pending request. it should           // wait for "return next(null, compact(out))"
+  * Fix typo in index.js in the collections example
+
 <a name="2.3.0"></a>
 # 2.3.0 (2016-04-26)
 
