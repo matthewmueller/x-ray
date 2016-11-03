@@ -17,12 +17,13 @@ var walk = require('./lib/walk')
 var fs = require('fs')
 
 var CONST = {
-  CRAWLER_METHODS: ['concurrency', 'throttle', 'timeout', 'driver', 'delay', 'limit'],
+  CRAWLER_METHODS: ['concurrency', 'throttle', 'timeout', 'driver', 'delay', 'limit', 'abort'],
   INIT_STATE: {
     stream: false,
     concurrency: Infinity,
     paginate: false,
-    limit: Infinity
+    limit: Infinity,
+    abort: false
   }
 }
 
@@ -122,6 +123,12 @@ function Xray (options) {
             return fn(null, pages)
           }
 
+          if (state.abort && state.abort(obj, url)) {
+            debug('abort check passed, ending')
+            stream(obj, true)
+            return fn(null, pages)
+          }
+
           stream(obj)
 
           // debug
@@ -139,6 +146,12 @@ function Xray (options) {
         }
       }
 
+      return node
+    }
+
+    node.abort = function (validator) {
+      if (!arguments.length) return state.abort
+      state.abort = validator
       return node
     }
 
