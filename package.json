@@ -18,6 +18,7 @@
     "debug": "^2.0.0",
     "object-assign": "^2.0.0",
     "superagent": "^0.21.0",
+    "superagent-proxy": "^1.0.2",
     "x-ray-select": "^1.0.6",
     "yieldly": "0.0.1"
   },
