@@ -1,6 +1,7 @@
 'use strict'
 
 var objectAssign = require('./lib/util').objectAssign
+var streamToPromise = require('./lib/promisify')
 var compact = require('./lib/util').compact
 var isArray = require('./lib/util').isArray
 var absolutes = require('./lib/absolutes')
@@ -166,6 +167,10 @@ function Xray (options) {
       state.stream = fs.createWriteStream(path)
       streamHelper.waitCb(state.stream, node)
       return state.stream
+    }
+
+    node.then = function (cb) {
+      return streamToPromise(node.stream()).then(cb)
     }
 
     return node

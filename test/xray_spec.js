@@ -399,4 +399,26 @@ describe('Xray basics', function () {
       })
     })
   })
+
+  describe('.then(cb)', function () {
+    it('should Promisify and pass cb to .then(cb)', function (done) {
+      var html = '<ul class="tags"><li>a</li><li>b</li><li>c</li></ul><ul class="tags"><li>d</li><li>e</li></ul>'
+      var $ = cheerio.load(html)
+      var x = Xray()
+
+      var xray = x($, '.tags', [['li']])
+
+      xray
+        .then(function (arr) {
+          assert(arr[0].length === 3)
+          assert(arr[0][0] === 'a')
+          assert(arr[0][1] === 'b')
+          assert(arr[0][2] === 'c')
+          assert(arr[1].length === 2)
+          assert(arr[1][0] === 'd')
+          assert(arr[1][1] === 'e')
+          done()
+        })
+    })
+  })
 })

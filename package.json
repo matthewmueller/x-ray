@@ -31,6 +31,7 @@
   ],
   "dependencies": {
     "batch": "~0.5.2",
+    "bluebird": "^3.4.7",
     "chalk": "~1.1.1",
     "cheerio": "~0.20.0",
     "debug": "~2.2.0",
@@ -38,6 +39,7 @@
     "is-url": "~1.2.0",
     "isobject": "~2.0.0",
     "object-assign": "~4.0.1",
+    "stream-to-string": "^1.1.0",
     "x-ray-crawler": "~2.0.1",
     "x-ray-parse": "~1.0.1"
   },
