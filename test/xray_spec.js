@@ -386,7 +386,7 @@ describe('Xray basics', function () {
 
       x('https://dribbble.com', 'li.group', [{
         title: '.dribbble-img strong',
-        image: '.dribbble-img [data-src]@data-src'
+        image: '.dribbble-img [src]@src'
       }]).paginate('.next_page@href').limit(3).write(path).on('finish', function () {
         var arr = JSON.parse(read(path, 'utf8'))
         assert(arr.length, 'array should have a length')
