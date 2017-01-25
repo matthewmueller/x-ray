@@ -15,14 +15,14 @@
 var Xray = require('x-ray');
 var x = Xray();
 
-x('https://dribbble.com', 'li.group', [{
-  title: '.dribbble-img strong',
-  image: '.dribbble-img [src]@src',
+x('https://blog.ycombinator.com/', '.post', [{
+  title: 'h1 a',
+  link: '.article-title@href'
 }])
-  .paginate('.next_page@href')
+  .paginate('.nav-previous a@href')
   .limit(3)
   .write('results.json')
-```
+```  
 
 ## Installation
 
