@@ -268,11 +268,11 @@ describe('Xray basics', function () {
     this.timeout(10000)
     var x = Xray()
 
-    var xray = x('https://dribbble.com', 'li.group', [{
-      title: '.dribbble-img strong',
-      image: '.dribbble-img [data-src]@data-src'
+    var xray = x('https://blog.ycombinator.com/', '.post', [{
+      title: 'h1 a',
+      link: '.article-title@href'
     }])
-      .paginate('.next_page@href')
+      .paginate('.nav-previous a@href')
       .limit(3)
 
     xray(function (err, arr) {
@@ -281,7 +281,7 @@ describe('Xray basics', function () {
 
       arr.forEach(function (item) {
         assert(item.title.length)
-        assert.equal(true, isUrl(item.image))
+        assert.equal(true, isUrl(item.link))
       })
       done()
     })
@@ -336,11 +336,11 @@ describe('Xray basics', function () {
       this.timeout(10000)
       var x = Xray()
 
-      var xray = x('https://dribbble.com', 'li.group', [{
-        title: '.dribbble-img strong',
-        image: '.dribbble-img [data-src]@data-src'
+      var xray = x('https://blog.ycombinator.com/', '.post', [{
+        title: 'h1 a',
+        link: '.article-title@href'
       }])
-        .paginate('.next_page@href')
+        .paginate('.nav-previous a@href')
         .limit(3)
 
       xray
@@ -352,7 +352,7 @@ describe('Xray basics', function () {
 
           arr.forEach(function (item) {
             assert(item.title.length)
-            assert.equal(true, isUrl(item.image))
+            assert.equal(true, isUrl(item.link))
           })
           done()
         }))
@@ -384,15 +384,15 @@ describe('Xray basics', function () {
       this.timeout(10000)
       var x = Xray()
 
-      x('https://dribbble.com', 'li.group', [{
-        title: '.dribbble-img strong',
-        image: '.dribbble-img [data-src]@data-src'
-      }]).paginate('.next_page@href').limit(3).write(path).on('finish', function () {
+      x('https://blog.ycombinator.com/', '.post', [{
+        title: 'h1 a',
+        link: '.article-title@href'
+      }]).paginate('.nav-previous a@href').limit(3).write(path).on('finish', function () {
         var arr = JSON.parse(read(path, 'utf8'))
         assert(arr.length, 'array should have a length')
         arr.forEach(function (item) {
           assert(item.title.length)
-          assert.equal(true, isUrl(item.image))
+          assert.equal(true, isUrl(item.link))
         })
         rm(path)
         done()
