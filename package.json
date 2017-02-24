@@ -2,7 +2,7 @@
   "name": "x-ray",
   "description": "structure any website",
   "homepage": "https://github.com/lapwinglabs/x-ray#readme",
-  "version": "2.3.1",
+  "version": "2.3.2",
   "main": "index.js",
   "author": {
     "name": "Matthew Mueller",

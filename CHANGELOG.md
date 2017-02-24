@@ -1,3 +1,17 @@
+
+<a name="2.3.2"></a>
+# 2.3.2 (2017-02-24)
+
+  * Merge pull request #221 from cvan/patch-1
+  * Merge pull request #233 from sagivo/patch-1
+  * Merge pull request #246 from paulbarrett/patch-1
+  * fix broken code sample using alt test site
+  * fix broken tests caused by removal of dribbble pagination
+  * modify test spec to account for dribble dom mods
+  * fix broken selector in the dribbble sample code
+  * remove commented code
+  * include both hostname + port when absolute-izing URLs
+
 <a name="2.3.1"></a>
 # 2.3.1 (2016-10-13)
 
