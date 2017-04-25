@@ -7,7 +7,7 @@
 [![Dev Dependencies Status](http://img.shields.io/david/dev/lapwinglabs/x-ray.svg?style=flat-square)](https://david-dm.org/lapwinglabs/x-ray#info=devDependencies)
 [![NPM Status](http://img.shields.io/npm/dm/x-ray.svg?style=flat-square)](https://www.npmjs.org/package/x-ray)
 ![Node version](https://img.shields.io/node/v/x-ray.svg?style=flat-square)
-[![OpenCollective](https://opencollective.com/x-ray/backers/badge.svg)](#backers) 
+[![OpenCollective](https://opencollective.com/x-ray/backers/badge.svg)](#backers)
 [![OpenCollective](https://opencollective.com/x-ray/sponsors/badge.svg)](#sponsors)
 
 
@@ -29,6 +29,14 @@ x('https://blog.ycombinator.com/', '.post', [{
 ```
 npm install x-ray
 ```
+
+## Job Board
+
+Looking for a career upgrade? Check out the available Node.js & Javascript positions at these innovative companies.
+
+<a href="https://astro.netlify.com/automattic"><img src="https://astro.netlify.com/static/automattic.png"></a>
+<a href="https://astro.netlify.com/segment"><img src="https://astro.netlify.com/static/segment.png"></a>
+<a href="https://astro.netlify.com/auth0"><img src="https://astro.netlify.com/static/auth0.png"/></a>
 
 ## Features
 
