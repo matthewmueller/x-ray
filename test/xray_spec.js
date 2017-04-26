@@ -287,6 +287,29 @@ describe('Xray basics', function () {
     })
   })
 
+  it('should work with paginate function', function (done) {
+    this.timeout(10000)
+    var x = Xray()
+
+    var xray = x('https://blog.ycombinator.com/', '.post', [{
+      title: 'h1 a',
+      link: '.article-title@href'
+    }])
+      .paginate(function(){"https://blog.ycombinator.com/page/2/"})
+      .limit(2)
+
+    xray(function (err, arr) {
+      if (err) return done(err)
+      assert(arr.length, 'array should have a length')
+
+      arr.forEach(function (item) {
+        assert(item.title.length)
+        assert.equal(true, isUrl(item.link))
+      })
+      done()
+    })
+  })
+
   it('should not call function twice when reaching the last page', function (done) {
     this.timeout(10000)
     setTimeout(done, 9000)
