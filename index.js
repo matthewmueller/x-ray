@@ -113,7 +113,7 @@ function Xray (options) {
             return fn(null, pages)
           }
 
-          var url = resolve($, false, paginate, filters)
+          var url = (typeof(paginate) == 'function') ? paginate() : resolve($, false, paginate, filters);
           debug('paginate(%j) => %j', paginate, url)
 
           if (!isUrl(url)) {
