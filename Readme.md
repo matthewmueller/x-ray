@@ -134,7 +134,7 @@ If no path is provided, then the behavior is the same as [.stream()](#xraystream
 
 ### xray.paginate(selector)
 
-Select a `url` from a `selector` and visit that page.
+Select a `url` from a `selector` and visit that page. Alternatively accepts a function which should return the URL of the next page to visit.
 
 ### xray.limit(n)
 
