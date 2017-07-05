@@ -7,7 +7,7 @@
 [![Dev Dependencies Status](http://img.shields.io/david/dev/lapwinglabs/x-ray.svg?style=flat-square)](https://david-dm.org/lapwinglabs/x-ray#info=devDependencies)
 [![NPM Status](http://img.shields.io/npm/dm/x-ray.svg?style=flat-square)](https://www.npmjs.org/package/x-ray)
 ![Node version](https://img.shields.io/node/v/x-ray.svg?style=flat-square)
-[![OpenCollective](https://opencollective.com/x-ray/backers/badge.svg)](#backers) 
+[![OpenCollective](https://opencollective.com/x-ray/backers/badge.svg)](#backers)
 [![OpenCollective](https://opencollective.com/x-ray/sponsors/badge.svg)](#sponsors)
 
 
@@ -15,20 +15,28 @@
 var Xray = require('x-ray');
 var x = Xray();
 
-x('https://dribbble.com', 'li.group', [{
-  title: '.dribbble-img strong',
-  image: '.dribbble-img [data-src]@data-src',
+x('https://blog.ycombinator.com/', '.post', [{
+  title: 'h1 a',
+  link: '.article-title@href'
 }])
-  .paginate('.next_page@href')
+  .paginate('.nav-previous a@href')
   .limit(3)
   .write('results.json')
-```
+```  
 
 ## Installation
 
 ```
 npm install x-ray
 ```
+
+## Job Board
+
+Looking for a career upgrade? Check out the available Node.js & Javascript positions at these innovative companies.
+
+<a href="https://astro.netlify.com/automattic"><img src="https://astro.netlify.com/static/automattic.png"></a>
+<a href="https://astro.netlify.com/segment"><img src="https://astro.netlify.com/static/segment.png"></a>
+<a href="https://astro.netlify.com/auth0"><img src="https://astro.netlify.com/static/auth0.png"/></a>
 
 ## Features
 
@@ -99,7 +107,10 @@ x(html, 'body', 'h2')(function(err, header) {
 
 ### xray.driver(driver)
 
-Specify a `driver` to make requests through.
+Specify a `driver` to make requests through. Available drivers include:
+
+- [request](https://github.com/Crazometer/request-x-ray) - A simple driver built around request. Use this to set headers, cookies or http methods.
+- [phantom](https://github.com/lapwinglabs/x-ray-phantom) - A high-level browser automation library. Use this to render pages or when elements need to be interacted with, or when elements are created dynamically using javascript (e.g.: Ajax-calls).
 
 ### xray.stream()
 
@@ -123,9 +134,7 @@ If no path is provided, then the behavior is the same as [.stream()](#xraystream
 
 ### xray.paginate(selector)
 
-Select a `url` from a `selector` and visit that page. Available drivers include:
-
-- [phantom driver](https://github.com/lapwinglabs/x-ray-phantom)
+Select a `url` from a `selector` and visit that page.
 
 ### xray.limit(n)
 
