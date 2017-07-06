@@ -140,6 +140,14 @@ Select a `url` from a `selector` and visit that page.
 
 Limit the amount of pagination to `n` requests.
 
+### xray.abort(validator)
+
+Abort pagination if `validator` function returns `true`.
+The `validator` function receives two arguments:
+
+- `result`: The scrape result object for the current page.
+- `nextUrl`: The URL of the next page to scrape.
+
 ### xray.delay(from, [to])
 
 Delay the next request between `from` and `to` milliseconds.

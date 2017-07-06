@@ -16,9 +16,13 @@ var Xray = require('..')
 
 /**
  * URL
+ *
+ * We can be reasonably certain the issues list with that sorting will stay static,
+ * since it is sorted by created date.
  */
 
 var url = 'http://lapwinglabs.github.io/static/'
+var pagedUrl = 'https://github.com/lapwinglabs/x-ray/issues?q=is%3Aissue%20sort%3Acreated-asc%20'
 
 /**
  * Tests
@@ -282,6 +286,70 @@ describe('Xray basics', function () {
       arr.forEach(function (item) {
         assert(item.title.length)
         assert.equal(true, isUrl(item.link))
+      })
+      done()
+    })
+  })
+
+  it('should work with pagination & abort function checking returned object', function (done) {
+    this.timeout(10000)
+    var x = Xray()
+
+    var xray = x(pagedUrl, 'li.js-issue-row', [{
+      id: '@id',
+      title: 'a.h4'
+    }])
+      .paginate('.next_page@href')
+      .limit(3)
+      .abort(function (result) {
+        var i = 0
+
+        // Issue 40 is on page 2 of our result set
+        for (; i < result.length; i++) {
+          if (result[i].id === 'issue_40') return true
+        }
+
+        return false
+      })
+
+    xray(function (err, arr) {
+      if (err) return done(err)
+      // 25 results per page
+      assert.equal(50, arr.length)
+
+      arr.forEach(function (item) {
+        assert(item.id.length)
+        assert(item.title.length)
+      })
+      done()
+    })
+  })
+
+  it('should work with pagination & abort function checking next URL', function (done) {
+    this.timeout(10000)
+    var x = Xray()
+
+    var xray = x(pagedUrl, 'li.js-issue-row', [{
+      id: '@id',
+      title: 'a.h4'
+    }])
+      .paginate('.next_page@href')
+      .limit(3)
+      .abort(function (result, url) {
+        // Break after page 2
+        if (url.indexOf('page=3') >= 0) return true
+
+        return false
+      })
+
+    xray(function (err, arr) {
+      if (err) return done(err)
+      // 25 results per page
+      assert.equal(50, arr.length)
+
+      arr.forEach(function (item) {
+        assert(item.id.length)
+        assert(item.title.length)
       })
       done()
     })
