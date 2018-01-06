@@ -37,7 +37,7 @@
     "debug": "~2.2.0",
     "enstore": "~1.0.1",
     "is-url": "~1.2.0",
-    "isobject": "~2.0.0",
+    "isobject": "~3.0.0",
     "object-assign": "~4.0.1",
     "stream-to-string": "^1.1.0",
     "x-ray-crawler": "~2.0.1",
