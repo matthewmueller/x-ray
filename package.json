@@ -44,14 +44,14 @@
     "x-ray-parse": "~1.0.1"
   },
   "devDependencies": {
-    "concat-stream": "~1.5.1",
-    "coveralls": "~2.11.8",
-    "istanbul": "~0.4.2",
+    "concat-stream": "1.5.2",
+    "coveralls": "2.11.16",
+    "istanbul": "0.4.5",
     "mocha": "latest",
-    "mocha-lcov-reporter": "~1.2.0",
-    "multiline": "~1.0.2",
-    "rimraf": "~2.5.2",
-    "standard": "~6.0.8"
+    "mocha-lcov-reporter": "1.2.0",
+    "multiline": "1.0.2",
+    "rimraf": "2.5.4",
+    "standard": "6.0.8"
   },
   "engines": {
     "node": ">= 0.10"
