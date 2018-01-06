@@ -45,7 +45,7 @@
   },
   "devDependencies": {
     "concat-stream": "1.5.2",
-    "coveralls": "2.11.16",
+    "coveralls": "2.13.3",
     "istanbul": "0.4.5",
     "mocha": "latest",
     "mocha-lcov-reporter": "1.2.0",
