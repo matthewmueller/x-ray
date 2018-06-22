@@ -1,4 +1,33 @@
 
+<a name="2.3.3"></a>
+# 2.3.2 (2018-06-22)
+==================
+
+  * removed bumped
+  * Merge pull request #283 from matthewmueller/renovate/pin-dependencies
+  * Pin Dependencies
+  * Merge pull request #282 from matthewmueller/renovate/configure
+  * Add renovate.json
+  * Merge pull request #241 from kengz/master
+  * Merge pull request #232 from dfcowell/master
+  * Merge pull request #218 from jmichelin/master
+  * Merge pull request #200 from thangngoc89/master
+  * Merge branch 'master' into master
+  * Merge pull request #253 from linguistbreaker/master
+  * Merge pull request #250 from mandeldl/master
+  * add job board
+  * fixing path for require() for XRay and a typo in path.resolve
+  * fix example typos and relative paths
+  * add json parsing error handler to promisify
+  * add readme for promisify
+  * add promisify option for xray.then(); add tests
+  * Update readme.
+  * Remove test constraints.
+  * Add abort function to allow for ending pagination based on returned results/next url.
+  * Merge pull request #1 from jmichelin/jmichelin-patch-1
+  * [bug](examples) fix typo in selector example
+  * Fix Composition and collection error
+
 <a name="2.3.2"></a>
 # 2.3.2 (2017-02-24)
 
