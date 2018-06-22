@@ -51,7 +51,7 @@
     "mocha-lcov-reporter": "1.2.0",
     "multiline": "1.0.2",
     "rimraf": "2.5.4",
-    "standard": "^6.0.8"
+    "standard": "6.0.8"
   },
   "engines": {
     "node": ">= 0.10"
