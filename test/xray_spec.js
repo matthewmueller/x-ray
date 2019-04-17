@@ -295,7 +295,7 @@ describe('Xray basics', function () {
     this.timeout(10000)
     var x = Xray()
 
-    var xray = x(pagedUrl, 'li.js-issue-row', [{
+    var xray = x(pagedUrl, '.js-issue-row', [{
       id: '@id',
       title: 'a.h4'
     }])
@@ -329,7 +329,7 @@ describe('Xray basics', function () {
     this.timeout(10000)
     var x = Xray()
 
-    var xray = x(pagedUrl, 'li.js-issue-row', [{
+    var xray = x(pagedUrl, '.js-issue-row', [{
       id: '@id',
       title: 'a.h4'
     }])
