@@ -54,7 +54,7 @@
     "standard": "6.0.8"
   },
   "engines": {
-    "node": ">= 0.10"
+    "node": ">= 6.0.0"
   },
   "scripts": {
     "coveralls": "./node_modules/.bin/istanbul cover ./node_modules/.bin/_mocha --report lcovonly",
