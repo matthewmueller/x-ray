@@ -1,8 +1,11 @@
 language: node_js
 node_js:
   - "stable"
-  - "12"
-  - "10"
+  - "6"
   - "8"
+  - "9"
+  - "10"
+  - "11"
+  - "12"
 script: npm run-script pretest && npm run-script coveralls
 after_script: "cat ./coverage/lcov.info | ./node_modules/coveralls/bin/coveralls.js"
