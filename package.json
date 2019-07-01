@@ -31,7 +31,7 @@
     "web"
   ],
   "dependencies": {
-    "batch": "~0.5.2",
+    "batch": "~0.6.0",
     "bluebird": "^3.4.7",
     "chalk": "~1.1.1",
     "cheerio": "~0.20.0",
