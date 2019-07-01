@@ -2,7 +2,7 @@
   "name": "x-ray",
   "description": "structure any website",
   "homepage": "https://github.com/matthewmueller/x-ray#readme",
-  "version": "2.3.3",
+  "version": "2.3.4",
   "main": "index.js",
   "author": {
     "name": "Matthew Mueller",
