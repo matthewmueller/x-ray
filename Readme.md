@@ -1,42 +1,35 @@
 ![x-ray](https://cldup.com/fMBbTcVtwB.png)
 
-![Last version](https://img.shields.io/github/tag/lapwinglabs/x-ray.svg?style=flat-square)
-[![Build Status](http://img.shields.io/travis/lapwinglabs/x-ray/master.svg?style=flat-square)](https://travis-ci.org/lapwinglabs/x-ray)
-[![Coverage Status](https://coveralls.io/repos/github/lapwinglabs/x-ray/badge.svg?branch=master&style=flat-square)](https://coveralls.io/github/lapwinglabs/x-ray?branch=master)
-[![Dependency status](http://img.shields.io/david/lapwinglabs/x-ray.svg?style=flat-square)](https://david-dm.org/lapwinglabs/x-ray)
-[![Dev Dependencies Status](http://img.shields.io/david/dev/lapwinglabs/x-ray.svg?style=flat-square)](https://david-dm.org/lapwinglabs/x-ray#info=devDependencies)
+![Last version](https://img.shields.io/github/tag/matthewmueller/x-ray.svg?style=flat-square)
+[![Build Status](http://img.shields.io/travis/matthewmueller/x-ray/master.svg?style=flat-square)](https://travis-ci.org/matthewmueller/x-ray)
+[![Coverage Status](https://coveralls.io/repos/github/matthewmueller/x-ray/badge.svg?branch=master&style=flat-square)](https://coveralls.io/github/matthewmueller/x-ray?branch=master)
+[![Dependency status](http://img.shields.io/david/matthewmueller/x-ray.svg?style=flat-square)](https://david-dm.org/matthewmueller/x-ray)
+[![Dev Dependencies Status](http://img.shields.io/david/dev/matthewmueller/x-ray.svg?style=flat-square)](https://david-dm.org/matthewmueller/x-ray#info=devDependencies)
 [![NPM Status](http://img.shields.io/npm/dm/x-ray.svg?style=flat-square)](https://www.npmjs.org/package/x-ray)
 ![Node version](https://img.shields.io/node/v/x-ray.svg?style=flat-square)
 [![OpenCollective](https://opencollective.com/x-ray/backers/badge.svg)](#backers)
 [![OpenCollective](https://opencollective.com/x-ray/sponsors/badge.svg)](#sponsors)
 
-
 ```js
-var Xray = require('x-ray');
-var x = Xray();
+var Xray = require('x-ray')
+var x = Xray()
 
-x('https://blog.ycombinator.com/', '.post', [{
-  title: 'h1 a',
-  link: '.article-title@href'
-}])
+x('https://blog.ycombinator.com/', '.post', [
+  {
+    title: 'h1 a',
+    link: '.article-title@href'
+  }
+])
   .paginate('.nav-previous a@href')
   .limit(3)
   .write('results.json')
-```  
+```
 
 ## Installation
 
 ```
 npm install x-ray
 ```
-
-## Job Board
-
-Looking for a career upgrade? Check out the available Node.js & Javascript positions at these innovative companies.
-
-<a href="https://astro.netlify.com/automattic"><img src="https://astro.netlify.com/static/automattic.png"></a>
-<a href="https://astro.netlify.com/segment"><img src="https://astro.netlify.com/static/segment.png"></a>
-<a href="https://astro.netlify.com/auth0"><img src="https://astro.netlify.com/static/auth0.png"/></a>
 
 ## Features
 
@@ -47,7 +40,7 @@ Looking for a career upgrade? Check out the available Node.js & Javascript posit
 - **Pagination support:** Paginate through websites, scraping each page. X-ray also supports a request `delay` and a pagination `limit`. Scraped pages can be streamed to a file, so if there's an error on one page, you won't lose what you've already scraped.
 
 - **Crawler support:** Start on one page and move to the next easily. The flow is predictable, following
-a breadth-first crawl through each of the pages.
+  a breadth-first crawl through each of the pages.
 
 - **Responsible:** X-ray has support for concurrency, throttles, delays, timeouts and limits to help you scrape any page responsibly.
 
@@ -97,7 +90,7 @@ You can also supply a `scope` to each `selector`. In jQuery, this would look som
 Instead of a url, you can also supply raw HTML and all the same semantics apply.
 
 ```js
-var html = "<body><h2>Pear</h2></body>";
+var html = '<body><h2>Pear</h2></body>'
 x(html, 'body', 'h2')(function(err, header) {
   header // => Pear
 })
@@ -117,12 +110,12 @@ Specify a `driver` to make requests through. Available drivers include:
 Returns Readable Stream of the data. This makes it easy to build APIs around x-ray. Here's an example with Express:
 
 ```js
-var app = require('express')();
-var x = require('x-ray')();
+var app = require('express')()
+var x = require('x-ray')()
 
 app.get('/', function(req, res) {
-  var stream = x('http://google.com', 'title').stream();
-  stream.pipe(res);
+  var stream = x('http://google.com', 'title').stream()
+  stream.pipe(res)
 })
 ```
 
@@ -137,16 +130,18 @@ If no path is provided, then the behavior is the same as [.stream()](#xraystream
 Constructs a `Promise` object and invoke its `then` function with a callback `cb`. Be sure to invoke `then()` at the last step of xray method chaining, since the other methods are not promisified.
 
 ```js
-x('https://dribbble.com', 'li.group', [{
-  title: '.dribbble-img strong',
-  image: '.dribbble-img [data-src]@data-src',
-}])
+x('https://dribbble.com', 'li.group', [
+  {
+    title: '.dribbble-img strong',
+    image: '.dribbble-img [data-src]@data-src'
+  }
+])
   .paginate('.next_page@href')
   .limit(3)
-  .then(function (res) {
+  .then(function(res) {
     console.log(res[0]) // prints first result
   })
-  .catch(function (err) {
+  .catch(function(err) {
     console.log(err) // handle error in promise
   })
 ```
@@ -197,14 +192,14 @@ X-ray becomes more powerful when you start composing instances together. Here ar
 ### Crawling to another site
 
 ```js
-var Xray = require('x-ray');
-var x = Xray();
+var Xray = require('x-ray')
+var x = Xray()
 
 x('http://google.com', {
   main: 'title',
-  image: x('#gbar a@href', 'title'), // follow link to google images
+  image: x('#gbar a@href', 'title') // follow link to google images
 })(function(err, obj) {
-/*
+  /*
   {
     main: 'Google',
     image: 'Google Images'
@@ -216,17 +211,19 @@ x('http://google.com', {
 ### Scoping a selection
 
 ```js
-var Xray = require('x-ray');
-var x = Xray();
+var Xray = require('x-ray')
+var x = Xray()
 
 x('http://mat.io', {
   title: 'title',
-  items: x('.item', [{
-    title: '.item-content h2',
-    description: '.item-content section'
-  }])
+  items: x('.item', [
+    {
+      title: '.item-content h2',
+      description: '.item-content section'
+    }
+  ])
 })(function(err, obj) {
-/*
+  /*
   {
     title: 'mat.io',
     items: [
@@ -245,25 +242,30 @@ x('http://mat.io', {
 Filters can specified when creating a new Xray instance. To apply filters to a value, append them to the selector using `|`.
 
 ```js
-var Xray = require('x-ray');
+var Xray = require('x-ray')
 var x = Xray({
   filters: {
-    trim: function (value) {
+    trim: function(value) {
       return typeof value === 'string' ? value.trim() : value
     },
-    reverse: function (value) {
-      return typeof value === 'string' ? value.split('').reverse().join('') : value
+    reverse: function(value) {
+      return typeof value === 'string'
+        ? value
+            .split('')
+            .reverse()
+            .join('')
+        : value
     },
-    slice: function (value, start , end) {
+    slice: function(value, start, end) {
       return typeof value === 'string' ? value.slice(start, end) : value
     }
   }
-});
+})
 
 x('http://mat.io', {
   title: 'title | trim | reverse | slice:2,3'
 })(function(err, obj) {
-/*
+  /*
   {
     title: 'oi'
   }
@@ -288,6 +290,7 @@ x('http://mat.io', {
 - Video: https://egghead.io/lessons/node-js-intro-to-web-scraping-with-node-and-x-ray
 
 ## Backers
+
 Support us with a monthly donation and help us continue our activities. [[Become a backer](https://opencollective.com/x-ray#backer)]
 
 <a href="https://opencollective.com/x-ray/backer/0/website" target="_blank"><img src="https://opencollective.com/x-ray/backer/0/avatar.svg"></a>
@@ -321,8 +324,8 @@ Support us with a monthly donation and help us continue our activities. [[Become
 <a href="https://opencollective.com/x-ray/backer/28/website" target="_blank"><img src="https://opencollective.com/x-ray/backer/28/avatar.svg"></a>
 <a href="https://opencollective.com/x-ray/backer/29/website" target="_blank"><img src="https://opencollective.com/x-ray/backer/29/avatar.svg"></a>
 
-
 ## Sponsors
+
 Become a sponsor and get your logo on our website and on our README on Github with a link to your site. [[Become a sponsor](https://opencollective.com/x-ray#sponsor)]
 
 <a href="https://opencollective.com/x-ray/sponsor/0/website" target="_blank"><img src="https://opencollective.com/x-ray/sponsor/0/avatar.svg"></a>

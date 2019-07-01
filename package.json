@@ -1,25 +1,26 @@
 {
   "name": "x-ray",
   "description": "structure any website",
-  "homepage": "https://github.com/lapwinglabs/x-ray#readme",
-  "version": "2.3.2",
+  "homepage": "https://github.com/matthewmueller/x-ray#readme",
+  "version": "2.3.4",
   "main": "index.js",
   "author": {
     "name": "Matthew Mueller",
     "email": "matt@lapwinglabs.com"
   },
   "contributors": [
-    {
-      "name": "Fabien Franzen",
-      "email": "info@atelierfabien.be"
-    }
+   "Paul Barrett",
+   "Kiko Beats <josefrancisco.verdu@gmail.com>",    
+   "Fabien Franzen <info@atelierfabien.be>",
+   "Wah Loon Keng <kengzwl@gmail.com>",
+   "Daniel Lathrop <daniel.lathrop@gmail.com>"
   ],
   "repository": {
     "type": "git",
-    "url": "git://github.com/lapwinglabs/x-ray.git"
+    "url": "git://github.com/matthewmueller/x-ray.git"
   },
   "bugs": {
-    "url": "https://github.com/lapwinglabs/x-ray/issues"
+    "url": "https://github.com/matthewmueller/x-ray/issues"
   },
   "keywords": [
     "api",
@@ -30,10 +31,10 @@
     "web"
   ],
   "dependencies": {
-    "batch": "~0.5.2",
+    "batch": "~0.6.0",
     "bluebird": "^3.4.7",
     "chalk": "~1.1.1",
-    "cheerio": "~0.20.0",
+    "cheerio": "~0.22.0",
     "debug": "~2.2.0",
     "enstore": "~1.0.1",
     "is-url": "~1.2.0",
@@ -44,17 +45,16 @@
     "x-ray-parse": "~1.0.1"
   },
   "devDependencies": {
-    "concat-stream": "1.5.2",
     "coveralls": "2.13.3",
     "istanbul": "0.4.5",
-    "mocha": "latest",
+    "mocha": "~6.1.4",
     "mocha-lcov-reporter": "1.2.0",
     "multiline": "1.0.2",
     "rimraf": "2.5.4",
     "standard": "6.0.8"
   },
   "engines": {
-    "node": ">= 0.10"
+    "node": ">= 6.0.0"
   },
   "scripts": {
     "coveralls": "./node_modules/.bin/istanbul cover ./node_modules/.bin/_mocha --report lcovonly",
