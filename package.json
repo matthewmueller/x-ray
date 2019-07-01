@@ -45,7 +45,7 @@
     "x-ray-parse": "~1.0.1"
   },
   "devDependencies": {
-    "concat-stream": "1.5.2",
+    "concat-stream": "1.6.2",
     "coveralls": "2.11.16",
     "istanbul": "0.4.5",
     "mocha": "~6.1.4",
