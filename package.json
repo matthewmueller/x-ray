@@ -35,7 +35,7 @@
     "bluebird": "^3.4.7",
     "chalk": "~2.4.0",
     "cheerio": "~0.22.0",
-    "debug": "~2.6.0",
+    "debug": "~4.1.0",
     "enstore": "~1.0.1",
     "is-url": "~1.2.0",
     "isobject": "~2.1.0",
