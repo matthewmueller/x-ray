@@ -502,6 +502,7 @@ describe('Xray basics', function () {
         process.removeListener('unhandledRejection', noop)
         assert(resHandler.called === false, 'result handler never called')
         assert(errorHandler.calledOnce === true, 'error handler called once')
+        assert(errorHandler.firstCall.args[0] instanceof Error, 'called with error')
       })
     })
   })
