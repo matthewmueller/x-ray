@@ -12,6 +12,7 @@ var join = require('path').join
 var rm = require('rimraf').sync
 var assert = require('assert')
 var isUrl = require('is-url')
+var sinon = require('sinon')
 var Xray = require('..')
 
 /**
@@ -468,25 +469,41 @@ describe('Xray basics', function () {
     })
   })
 
-  describe('.then(cb)', function () {
-    it('should Promisify and pass cb to .then(cb)', function (done) {
-      var html = '<ul class="tags"><li>a</li><li>b</li><li>c</li></ul><ul class="tags"><li>d</li><li>e</li></ul>'
-      var $ = cheerio.load(html)
-      var x = Xray()
+  describe('.then(cb, err)', function () {
+    var noop = function () { }
+    var html = '<ul class="tags"><li>a</li><li>b</li><li>c</li></ul><ul class="tags"><li>d</li><li>e</li></ul>'
+    var expected = [['a', 'b', 'c'], ['d', 'e']]
+    var $ = cheerio.load(html)
+    var x = Xray()
+
+    it('should Promisify and pass cb to promise', function () {
+      var resHandler = sinon.fake()
+      var errorHandler = sinon.fake()
 
       var xray = x($, '.tags', [['li']])
+      var promise = xray.then(resHandler, errorHandler)
 
-      xray
-        .then(function (arr) {
-          assert(arr[0].length === 3)
-          assert(arr[0][0] === 'a')
-          assert(arr[0][1] === 'b')
-          assert(arr[0][2] === 'c')
-          assert(arr[1].length === 2)
-          assert(arr[1][0] === 'd')
-          assert(arr[1][1] === 'e')
-          done()
-        })
+      return promise.then(function () {
+        assert(resHandler.calledOnce === true, 'result handler called once')
+        assert.deepStrictEqual(resHandler.firstCall.args[0], expected)
+        assert(errorHandler.called === false, 'error handler never called')
+      })
+    })
+
+    it('should Promisify and pass rejections to promise', function () {
+      var resHandler = sinon.fake()
+      var errorHandler = sinon.fake()
+
+      var xray = x('https://127.0.0.1:666/', '.tags', [['li']])
+      process.once('unhandledRejection', noop)
+      var promise = xray.then(resHandler, errorHandler)
+
+      return promise.then(function () {
+        process.removeListener('unhandledRejection', noop)
+        assert(resHandler.called === false, 'result handler never called')
+        assert(errorHandler.calledOnce === true, 'error handler called once')
+        assert(errorHandler.firstCall.args[0] instanceof Error, 'called with error')
+      })
     })
   })
 })
