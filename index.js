@@ -182,8 +182,8 @@ function Xray (options) {
       return state.stream
     }
 
-    node.then = function (cb) {
-      return streamToPromise(node.stream()).then(cb)
+    node.then = function (resHandler, errHandler) {
+      return streamToPromise(node.stream()).then(resHandler, errHandler)
     }
 
     return node
