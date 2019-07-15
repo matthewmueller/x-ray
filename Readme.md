@@ -9,6 +9,7 @@
 ![Node version](https://img.shields.io/node/v/x-ray.svg?style=flat-square)
 [![OpenCollective](https://opencollective.com/x-ray/backers/badge.svg)](#backers)
 [![OpenCollective](https://opencollective.com/x-ray/sponsors/badge.svg)](#sponsors)
+[![Gitter](https://badges.gitter.im/lapwinglabs/x-ray.svg)](https://gitter.im/lapwinglabs/x-ray?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge)
 
 ```js
 var Xray = require('x-ray')
