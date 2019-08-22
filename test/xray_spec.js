@@ -372,7 +372,7 @@ describe('Xray basics', function () {
     })
   })
 
-  it('it should not decode non-latin HTML automatically when using `@html` selector', function (done) {
+  it('it should not encode non-latin HTML automatically when using `@html` selector', function (done) {
     var x = Xray()
 
     x('<div>你好</div>', 'div@html')(function (err, result) {
