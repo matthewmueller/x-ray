@@ -170,7 +170,6 @@ If only `from` is specified, delay exactly `from` milliseconds.
 ```js
 var x = Xray().delay('1s', '10s')
 ```
-.throttle(5, '1s')
 
 ### xray.concurrency(n)
 
