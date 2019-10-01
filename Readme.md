@@ -170,6 +170,7 @@ If only `from` is specified, delay exactly `from` milliseconds.
 ```js
 var x = Xray().delay('1s', '10s')
 ```
+.throttle(5, '1s')
 
 ### xray.concurrency(n)
 
@@ -181,6 +182,9 @@ var x = Xray().concurrency(2)
 ### xray.throttle(n, ms)
 
 Throttle the requests to `n` requests per `ms` milliseconds.
+```js
+var x = Xray().throttle(2, '1s')
+```
 
 ### xray.timeout (ms)
 
