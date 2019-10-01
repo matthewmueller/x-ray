@@ -167,10 +167,16 @@ The `validator` function receives two arguments:
 
 Delay the next request between `from` and `to` milliseconds.
 If only `from` is specified, delay exactly `from` milliseconds.
+```js
+var x = Xray().delay('1s', '10s')
+```
 
 ### xray.concurrency(n)
 
 Set the request concurrency to `n`. Defaults to `Infinity`.
+```js
+var x = Xray().concurrency(2)
+```
 
 ### xray.throttle(n, ms)
 
@@ -179,6 +185,9 @@ Throttle the requests to `n` requests per `ms` milliseconds.
 ### xray.timeout (ms)
 
 Specify a timeout of `ms` milliseconds for each request.
+```js
+var x = Xray().timeout(30)
+```
 
 ## Collections
 
