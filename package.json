@@ -33,7 +33,7 @@
   "dependencies": {
     "batch": "~0.6.0",
     "bluebird": "^3.4.7",
-    "chalk": "~2.4.0",
+    "chalk": "~4.1.0",
     "cheerio": "~0.22.0",
     "debug": "~4.1.0",
     "enstore": "~1.0.1",
