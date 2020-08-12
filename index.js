@@ -213,7 +213,7 @@ function Request (crawler) {
 
 function load (html, url) {
   html = html || ''
-  var $ = html.html ? html : cheerio.load(html)
+  var $ = html.html ? html : cheerio.load(html, { decodeEntities: false })
   if (url) $ = absolutes(url, $)
   return $
 }
