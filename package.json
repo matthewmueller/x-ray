@@ -45,7 +45,7 @@
     "x-ray-parse": "~1.0.1"
   },
   "devDependencies": {
-    "coveralls": "3.0.6",
+    "coveralls": "3.1.1",
     "istanbul": "0.4.5",
     "mocha": "~6.1.4",
     "mocha-lcov-reporter": "1.3.0",
