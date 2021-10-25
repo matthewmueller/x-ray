@@ -34,7 +34,7 @@
     "batch": "~0.6.0",
     "bluebird": "^3.4.7",
     "chalk": "~2.4.0",
-    "cheerio": "~0.22.0",
+    "cheerio": "1.0.0-rc.2",
     "debug": "~4.1.0",
     "enstore": "~1.0.1",
     "is-url": "~1.2.0",
